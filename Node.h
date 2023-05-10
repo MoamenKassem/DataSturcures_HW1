@@ -9,7 +9,7 @@
 class Node {
 public:
     int key;
-    void* content;
+    int content;
     Node* leftSon;
     Node* rightSon;
     Node* father; //if needed
@@ -17,14 +17,14 @@ public:
     int numOfRightSons;
     int height;
 
-    void addSon(Node* son);
     void addLeftSon(Node* son);
     void addRightSon(Node* son);
-    int getBalanceFactor(){return numOfLeftSons-numOfRightSons;}
+    int getBalanceFactor() const {return numOfLeftSons-numOfRightSons;}
     int updateHeight();
-    Node()=default;
-    Node(int key, void* content,Node* father):key(key),content(content),
-                                              leftSon(nullptr),rightSon(nullptr),numOfRightSons(0),numOfLeftSons(0),father(father){}
+    Node():content(0),leftSon(nullptr),rightSon(nullptr),
+    father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0){};
+    Node(int key, int content,Node* father):key(key),content(content),
+    leftSon(nullptr),rightSon(nullptr),numOfRightSons(0),numOfLeftSons(0),father(father),height(0){}
     ~Node()=default;
     Node(Node&)=default;
 };

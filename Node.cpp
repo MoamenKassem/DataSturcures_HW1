@@ -2,17 +2,6 @@
 
 //
 // Created by MKassem360 on 5/10/2023.
-void Node::addSon(Node *son)
-{
-    if (son->father == nullptr)
-        return;
-    if (son->father->rightSon == son)
-    {
-        this->addRightSon(son);
-        return;
-    }
-    this->addLeftSon(son);
-}
 
 void Node::addLeftSon(Node *son)
 {
@@ -28,12 +17,29 @@ void Node::addRightSon(Node *son)
 }
 int Node::updateHeight()
 {
-    if(this->leftSon->height >= this->rightSon->height)
+    int leftHeight,rightHeight;
+    if(this->leftSon == nullptr)
     {
-        this->height = leftSon->height+1;
+        leftHeight = -1;
+    }
+    else
+    {
+        leftHeight= this->leftSon->height;
+    }
+    if(this->rightSon == nullptr)
+    {
+        rightHeight = -1;
+    }
+    else
+    {
+        rightHeight= this->rightSon->height;
+    }
+
+    if(leftHeight > rightHeight)
+    {
+        this->height = leftHeight+1;
         return height;
     }
-    this->height = leftSon->height+1;
+    this->height = rightHeight+1;
     return height;
 }
-#include "Node.h"

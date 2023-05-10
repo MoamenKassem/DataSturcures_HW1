@@ -4,31 +4,50 @@
 
 #include "AVL_Tree.h"
 #include <cmath>
-#include <string>
 #include <iostream>
 #include <queue>
 
 
-void AVL_Tree::searchAndAdd(void* content)
+void AVL_Tree::searchAndAdd(int content)
 {
     // Search
 
-    int toInsert_index= this->getNumOfNodes();
-    Node* currentNodePtr = &this->root;
-    Node* currentFatherNodePtr;
+    int toInsert_index= content;
+    Node* currentNodePtr = this->root;
+    Node* currentFatherNodePtr = nullptr;
+    Node* toInsert = nullptr;
     while(currentNodePtr != nullptr)
     {
         currentFatherNodePtr = currentNodePtr;
-        if (currentNodePtr->key < toInsert_index)
+        if (currentNodePtr->content < content)
         {
             currentNodePtr = currentNodePtr->rightSon; //Go to right son
+            if (currentNodePtr == nullptr)
+            {
+                toInsert= new Node(toInsert_index,content,currentFatherNodePtr);
+                currentFatherNodePtr->addRightSon(toInsert);
+                break;
+            }
             continue;
         }
         currentNodePtr = currentNodePtr->leftSon; //Go to right son
+        if (currentNodePtr == nullptr)
+        {
+            toInsert = new Node(toInsert_index,content,currentFatherNodePtr);
+            currentFatherNodePtr->addLeftSon(toInsert);
+            break;
+        }
     }
     // Add
-    Node* toInsert= new Node(toInsert_index,content,currentFatherNodePtr);
-    currentFatherNodePtr->addSon(toInsert);
+    if(currentFatherNodePtr == nullptr && currentNodePtr == nullptr) //new root
+    {
+        toInsert = new Node(toInsert_index,content, nullptr);
+        this->root=toInsert;
+        toInsert->updateHeight();
+        this->numOfNodes++;
+        return;
+    }
+
     int oldHeight = currentFatherNodePtr->height;
     while(oldHeight != currentFatherNodePtr->updateHeight())
     {
@@ -39,13 +58,14 @@ void AVL_Tree::searchAndAdd(void* content)
         }
 
         currentFatherNodePtr = currentFatherNodePtr->father;
+        if (currentFatherNodePtr == nullptr)
+            break;
         oldHeight = currentFatherNodePtr->height;
     }
-
+    this->numOfNodes++;
 }
 
 void AVL_Tree::printLevelOrder() {
-    Node* root = &this->root;
     if (root == nullptr) {
         return;
     }
@@ -56,7 +76,7 @@ void AVL_Tree::printLevelOrder() {
         for (int i = 0; i < size; i++) {
             Node* curr = q.front();
             q.pop();
-            if (curr != NULL) {
+            if (curr != nullptr) {
                 std::cout << curr->key << " ";
                 q.push(curr->leftSon);
                 q.push(curr->rightSon);
@@ -66,4 +86,5 @@ void AVL_Tree::printLevelOrder() {
         }
         std::cout << std::endl;
     }
+    std::cout << "---------------------------------------------------------------------" << std::endl;
 }

@@ -14,9 +14,9 @@
 
 #ifndef STREAMINGDBA1_H_
 #define STREAMINGDBA1_H_
-
 #include "wet1util.h"
-
+#include "Node.h"
+#include "AVL_Tree.h"
 class streaming_database {
 private:
 	//

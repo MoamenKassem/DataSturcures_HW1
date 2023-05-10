@@ -1,5 +1,4 @@
-@@ -0,0 +1,164 @@
-// 
+//
 // 234218 Data Structures 1.
 // Semester: 2023B (spring).
 // Wet Exercise #1.

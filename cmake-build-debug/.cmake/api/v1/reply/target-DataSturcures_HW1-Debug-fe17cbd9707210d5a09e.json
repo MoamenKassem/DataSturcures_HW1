@@ -39,9 +39,6 @@
 			[
 				{
 					"fragment" : "/DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi"
-				},
-				{
-					"fragment" : "-std:c++17"
 				}
 			],
 			"language" : "CXX",
@@ -51,11 +48,13 @@
 				[
 					1
 				],
-				"standard" : "17"
+				"standard" : "11"
 			},
 			"sourceIndexes" : 
 			[
-				0
+				0,
+				1,
+				2
 			]
 		}
 	],
@@ -92,7 +91,9 @@
 			"name" : "Source Files",
 			"sourceIndexes" : 
 			[
-				0
+				0,
+				1,
+				2
 			]
 		}
 	],
@@ -101,7 +102,19 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "main.cpp",
+			"path" : "AVL_Tree.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "maina1.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Node.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

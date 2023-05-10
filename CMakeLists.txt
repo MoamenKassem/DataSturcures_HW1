@@ -3,4 +3,4 @@ project(DataSturcures_HW1)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(DataSturcures_HW1 main.cpp)
+add_executable(DataSturcures_HW1 AVL_Tree.cpp StreamingDBa1.cpp maina1.cpp)

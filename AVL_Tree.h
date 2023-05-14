@@ -16,8 +16,6 @@ public:
     Node* getRoot(){return this->root;};
     int getNumOfNodes() const{return this->numOfNodes;};
     Node* searchAndAdd (int content);
-    bool searchAndReturn(int content);
-    Node* search(int content);
     StatusType searchAndDelete(int content);
     void leftRoll(Node* node);
     void rightRoll(Node* node);

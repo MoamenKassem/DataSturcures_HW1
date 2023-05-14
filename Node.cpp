@@ -77,3 +77,11 @@ int Node::getBalanceFactor() const
     }
     return leftHeight-rightHeight;
 }
+
+void Node::swapNodes(Node *node1)
+{
+    int temp;
+    temp = this->content;
+    this->content = node1->content;
+    node1->content = temp;
+}

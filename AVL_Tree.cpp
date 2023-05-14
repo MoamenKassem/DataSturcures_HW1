@@ -164,7 +164,11 @@ StatusType AVL_Tree::searchAndDelete(int content)
             {
                 nodeToSwitch = nodeToSwitch->leftSon;
             }
-            nodeToSwitch->father->leftSon = nullptr;
+            if(nodeToSwitch->father->leftSon == nodeToSwitch)
+            {
+                nodeToSwitch->father->leftSon = nullptr;
+            }
+            else{nodeToSwitch->father->rightSon = nullptr; }
             currentFatherNodePtr = nodeToSwitch->father;
             nodeToSwitch->father = nullptr;
             nodeToSwitch->swapNodes(currentNodePtr);
@@ -222,7 +226,7 @@ StatusType AVL_Tree::searchAndDelete(int content)
 
         currentFatherNodePtr = currentFatherNodePtr->father;
         if (currentFatherNodePtr == nullptr)
-            continue;
+            break;
         oldHeight = currentFatherNodePtr->height;
     }
     this->numOfNodes--;
@@ -325,7 +329,7 @@ void AVL_Tree::printLevelOrder() {
             Node* curr = q.front();
             q.pop();
             if (curr != nullptr) {
-                std::cout << curr->key << " ";
+                std::cout << curr->content << " ";
                 q.push(curr->leftSon);
                 q.push(curr->rightSon);
             } else {
@@ -335,9 +339,4 @@ void AVL_Tree::printLevelOrder() {
         std::cout << std::endl;
     }
     std::cout << "---------------------------------------------------------------------" << std::endl;
-}
-
-bool AVL_Tree::searchAndReturn(int content)
-{
-
 }

@@ -19,7 +19,7 @@ public:
 
     void addLeftSon(Node* son);
     void addRightSon(Node* son);
-    int getBalanceFactor() const {return numOfLeftSons-numOfRightSons;}
+    int getBalanceFactor() const;
     int updateHeight();
     Node():content(0),leftSon(nullptr),rightSon(nullptr),
     father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0){};

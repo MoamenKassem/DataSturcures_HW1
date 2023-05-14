@@ -55,3 +55,25 @@ int Node::updateHeight()
     return height;
 }
 
+int Node::getBalanceFactor() const
+{
+    int leftHeight,rightHeight;
+    if(this->leftSon == nullptr)
+    {
+        leftHeight = -1;
+    } else
+    {
+        leftSon->updateHeight();
+        leftHeight = leftSon->height;
+    }
+    if(this->rightSon == nullptr)
+    {
+        rightHeight = -1;
+    } else
+    {
+
+        rightSon->updateHeight();
+        rightHeight = rightSon->height;
+    }
+    return leftHeight-rightHeight;
+}

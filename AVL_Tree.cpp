@@ -101,10 +101,18 @@ void AVL_Tree::leftRoll(Node* node)
     {
         tempNode->father=node;
     }
-    // correcting root
+    // correcting root and father's son
     if (newHead->father == nullptr)
     {
         this->root = newHead;
+    }
+    else if (newHead->father->rightSon == node)
+    {
+        newHead->father->rightSon = newHead;
+    }
+    else if (newHead->father->leftSon == node)
+    {
+        newHead->father->leftSon = newHead;
     }
     // correcting number of sons
     node->numOfRightSons = newHead->numOfLeftSons; //node-> leftsons doesn't change
@@ -130,6 +138,15 @@ void AVL_Tree::rightRoll(Node* node)
     {
         this->root = newHead;
     }
+    else if (newHead->father->rightSon == node)
+    {
+        newHead->father->rightSon = newHead;
+    }
+    else if (newHead->father->leftSon == node)
+    {
+        newHead->father->leftSon = newHead;
+    }
+
     // correcting number of sons
     node->numOfLeftSons = newHead->numOfRightSons; //node-> rightsons doesn't change
     newHead->numOfRightSons += node->numOfRightSons + 1;  //  newHead->numOfLeftSons doesn't change

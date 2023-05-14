@@ -7,7 +7,6 @@
 #include <iostream>
 #include <queue>
 
-
 void AVL_Tree::searchAndAdd(int content)
 {
     // Search
@@ -30,6 +29,8 @@ void AVL_Tree::searchAndAdd(int content)
             }
             continue;
         }
+        if (currentNodePtr->content == content)
+            return;
         currentNodePtr = currentNodePtr->leftSon; //Go to right son
         if (currentNodePtr == nullptr)
         {

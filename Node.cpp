@@ -43,3 +43,4 @@ int Node::updateHeight()
     this->height = rightHeight+1;
     return height;
 }
+

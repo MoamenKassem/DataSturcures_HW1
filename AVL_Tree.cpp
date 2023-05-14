@@ -65,6 +65,24 @@ void AVL_Tree::searchAndAdd(int content)
     this->numOfNodes++;
 }
 
+void AVL_Tree::leftRoll(Node* node)
+{
+    Node *newHead,*tempNode;
+    newHead = node->rightSon;
+    tempNode = newHead->leftSon;
+    newHead->leftSon = node;
+    node->rightSon = tempNode;
+}
+
+void AVL_Tree::rightRoll(Node* node)
+{
+    Node *newHead,*tempNode;
+    newHead = node->leftSon;
+    tempNode = newHead->rightSon;
+    newHead->rightSon = node;
+    node->leftSon = tempNode;
+}
+
 void AVL_Tree::printLevelOrder() {
     if (root == nullptr) {
         return;

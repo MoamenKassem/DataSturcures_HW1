@@ -51,9 +51,28 @@ void AVL_Tree::searchAndAdd(int content)
     int oldHeight = currentFatherNodePtr->height;
     while(oldHeight != currentFatherNodePtr->updateHeight())
     {
-        if(abs(currentFatherNodePtr->getBalanceFactor()) == 2)
+        int currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
+        if(abs(currentBalanceFactor) == 2)
         {
-            //rolling as intended
+            if(currentBalanceFactor == -2) //balance -2 -> RR/RL
+            {
+                if(currentFatherNodePtr->rightSon->getBalanceFactor() == 1) //RL
+                {
+                    rightRoll(currentFatherNodePtr->rightSon);
+                    leftRoll(currentFatherNodePtr);
+                }
+                //RR
+                leftRoll(currentFatherNodePtr);
+
+            }
+            //balance 2 -> LR/LL
+            if(currentFatherNodePtr->leftSon->getBalanceFactor() == -1) //LR
+            {
+                leftRoll(currentFatherNodePtr->leftSon);
+                rightRoll(currentFatherNodePtr);
+            }
+            //LL
+            rightRoll(currentFatherNodePtr);
             break;
         }
 
@@ -72,6 +91,10 @@ void AVL_Tree::leftRoll(Node* node)
     tempNode = newHead->leftSon;
     newHead->leftSon = node;
     node->rightSon = tempNode;
+    //correcting fathers
+    newHead->father=node->father;
+    node->father=newHead;
+    tempNode->father=node;
 }
 
 void AVL_Tree::rightRoll(Node* node)
@@ -81,6 +104,10 @@ void AVL_Tree::rightRoll(Node* node)
     tempNode = newHead->rightSon;
     newHead->rightSon = node;
     node->leftSon = tempNode;
+    //correcting fathers
+    newHead->father=node->father;
+    node->father=newHead;
+    tempNode->father=node;
 }
 
 void AVL_Tree::printLevelOrder() {

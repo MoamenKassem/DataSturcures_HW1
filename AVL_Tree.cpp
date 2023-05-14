@@ -7,7 +7,7 @@
 #include <iostream>
 #include <queue>
 
-void AVL_Tree::searchAndAdd(int content)
+Node* AVL_Tree::searchAndAdd(int content)
 {
     // Search
 
@@ -23,30 +23,30 @@ void AVL_Tree::searchAndAdd(int content)
             currentNodePtr = currentNodePtr->rightSon; //Go to right son
             if (currentNodePtr == nullptr)
             {
-                toInsert= new Node(toInsert_index,content,currentFatherNodePtr);
+                toInsert= new Node(0,content,currentFatherNodePtr);
                 currentFatherNodePtr->addRightSon(toInsert);
                 break;
             }
             continue;
         }
         if (currentNodePtr->content == content)
-            return;
+            return new Node(-1);
         currentNodePtr = currentNodePtr->leftSon; //Go to right son
         if (currentNodePtr == nullptr)
         {
-            toInsert = new Node(toInsert_index,content,currentFatherNodePtr);
+            toInsert = new Node(0,content,currentFatherNodePtr);
             currentFatherNodePtr->addLeftSon(toInsert);
             break;
         }
     }
     // Add
-    if(currentFatherNodePtr == nullptr && currentNodePtr == nullptr) //new root
+    if(currentFatherNodePtr == nullptr) //new root
     {
         toInsert = new Node(toInsert_index,content, nullptr);
         this->root=toInsert;
         toInsert->updateHeight();
         this->numOfNodes++;
-        return;
+        return toInsert;
     }
 
     int oldHeight = currentFatherNodePtr->height;
@@ -86,6 +86,148 @@ void AVL_Tree::searchAndAdd(int content)
         oldHeight = currentFatherNodePtr->height;
     }
     this->numOfNodes++;
+    return toInsert;
+}
+
+StatusType AVL_Tree::searchAndDelete(int content)
+{
+// Search
+
+    Node* currentNodePtr = this->root;
+    Node* currentFatherNodePtr = nullptr;
+    while(currentNodePtr != nullptr)
+    {
+        if (currentNodePtr->content == content)
+        {
+            //found the node to delete
+            //leaf
+            currentFatherNodePtr = currentNodePtr->father;
+            if(currentNodePtr->rightSon == nullptr && currentNodePtr->leftSon == nullptr)
+            {
+                //deleting root
+                if (currentNodePtr->father == nullptr)
+                {
+                    root = nullptr;
+                    return StatusType::SUCCESS;
+                }
+
+                if (currentNodePtr->father->rightSon == currentNodePtr)
+                {
+                    currentNodePtr->father->rightSon = nullptr;
+                    break;
+                }
+                currentNodePtr->father->leftSon = nullptr;
+                break;
+            }
+            // has just one son
+            if(currentNodePtr->rightSon != nullptr && currentNodePtr->leftSon == nullptr)
+            {
+                //deleting root
+                if (currentNodePtr->father == nullptr)
+                {
+                    root = currentNodePtr->rightSon;
+                    currentNodePtr->rightSon->father = nullptr;
+                    return StatusType::SUCCESS;
+                }
+
+                if (currentNodePtr->father->rightSon == currentNodePtr)
+                {
+                    currentNodePtr->father->rightSon = currentNodePtr->rightSon;
+                    currentNodePtr->rightSon->father = currentNodePtr->father;
+                    break;
+                }
+                currentNodePtr->father->leftSon = currentNodePtr->rightSon;
+                currentNodePtr->rightSon->father = currentNodePtr->father;
+                break;
+            }
+            if(currentNodePtr->leftSon != nullptr && currentNodePtr->rightSon == nullptr)
+            {
+                //deleting root
+                if (currentNodePtr->father == nullptr)
+                {
+                    root = currentNodePtr->leftSon;
+                    currentNodePtr->leftSon->father = nullptr;
+                    return StatusType::SUCCESS;
+                }
+
+                if (currentNodePtr->father->rightSon == currentNodePtr)
+                {
+                    currentNodePtr->father->rightSon = currentNodePtr->leftSon;
+                }
+                currentNodePtr->father->leftSon = currentNodePtr->leftSon;
+                break;
+            }
+            // has two sons
+            Node* nodeToSwitch;
+            nodeToSwitch = currentNodePtr->rightSon;
+            while(nodeToSwitch->leftSon != nullptr)
+            {
+                nodeToSwitch = nodeToSwitch->leftSon;
+            }
+            nodeToSwitch->father->leftSon = nullptr;
+            currentFatherNodePtr = nodeToSwitch->father;
+            nodeToSwitch->father = nullptr;
+            nodeToSwitch->swapNodes(currentNodePtr);
+            break;
+        }
+        if (currentNodePtr->content < content)
+        {
+            currentNodePtr = currentNodePtr->rightSon; //Go to right son
+            if (currentNodePtr == nullptr)
+            {
+                return StatusType::FAILURE;
+            }
+            continue;
+        }
+
+        currentNodePtr = currentNodePtr->leftSon; //Go to right son
+        if (currentNodePtr == nullptr)
+        {
+            return StatusType::FAILURE;
+        }
+    }
+
+    // fixing the tree with rolls
+
+    int oldHeight = currentFatherNodePtr->height;
+    while(oldHeight != currentFatherNodePtr->updateHeight())
+    {
+        int currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
+        if(abs(currentBalanceFactor) == 2)
+        {
+            if(currentBalanceFactor == -2) //balance -2 -> RR/RL
+            {
+                if(currentFatherNodePtr->rightSon->getBalanceFactor() == 1) //RL
+                {
+                    rightRoll(currentFatherNodePtr->rightSon);
+                    leftRoll(currentFatherNodePtr);
+                    continue;
+                }
+                //RR
+                leftRoll(currentFatherNodePtr);
+                continue;
+
+            }
+            //balance 2 -> LR/LL
+            if(currentFatherNodePtr->leftSon->getBalanceFactor() == -1) //LR
+            {
+                leftRoll(currentFatherNodePtr->leftSon);
+                rightRoll(currentFatherNodePtr);
+                continue;
+            }
+            //LL
+            rightRoll(currentFatherNodePtr);
+            continue;
+        }
+
+        currentFatherNodePtr = currentFatherNodePtr->father;
+        if (currentFatherNodePtr == nullptr)
+            continue;
+        oldHeight = currentFatherNodePtr->height;
+    }
+    this->numOfNodes--;
+    return StatusType::SUCCESS;
+
 }
 
 void AVL_Tree::leftRoll(Node* node)
@@ -155,6 +297,22 @@ void AVL_Tree::rightRoll(Node* node)
 
 }
 
+Node* AVL_Tree::search(int content){
+    Node* ptr = this->root;
+    while (ptr){
+        if (content < ptr->content){
+            ptr = ptr->leftSon;
+        }
+        if (content > ptr->content){
+            ptr = ptr->rightSon;
+        }
+        if (content == ptr->content){
+            return ptr;
+        }
+    }
+    return new Node(-1);
+}
+
 void AVL_Tree::printLevelOrder() {
     if (root == nullptr) {
         return;
@@ -177,4 +335,9 @@ void AVL_Tree::printLevelOrder() {
         std::cout << std::endl;
     }
     std::cout << "---------------------------------------------------------------------" << std::endl;
+}
+
+bool AVL_Tree::searchAndReturn(int content)
+{
+
 }

@@ -60,9 +60,11 @@ void AVL_Tree::searchAndAdd(int content)
                 {
                     rightRoll(currentFatherNodePtr->rightSon);
                     leftRoll(currentFatherNodePtr);
+                    break;
                 }
                 //RR
                 leftRoll(currentFatherNodePtr);
+                break;
 
             }
             //balance 2 -> LR/LL
@@ -70,6 +72,7 @@ void AVL_Tree::searchAndAdd(int content)
             {
                 leftRoll(currentFatherNodePtr->leftSon);
                 rightRoll(currentFatherNodePtr);
+                break;
             }
             //LL
             rightRoll(currentFatherNodePtr);
@@ -94,7 +97,18 @@ void AVL_Tree::leftRoll(Node* node)
     //correcting fathers
     newHead->father=node->father;
     node->father=newHead;
-    tempNode->father=node;
+    if (tempNode!= nullptr)
+    {
+        tempNode->father=node;
+    }
+    // correcting root
+    if (newHead->father == nullptr)
+    {
+        this->root = newHead;
+    }
+    // correcting number of sons
+    node->numOfRightSons = newHead->numOfLeftSons; //node-> leftsons doesn't change
+    newHead->numOfLeftSons += node->numOfLeftSons + 1;  //  newHead->rightsons doesn't change
 }
 
 void AVL_Tree::rightRoll(Node* node)
@@ -107,7 +121,20 @@ void AVL_Tree::rightRoll(Node* node)
     //correcting fathers
     newHead->father=node->father;
     node->father=newHead;
-    tempNode->father=node;
+    if (tempNode!= nullptr)
+    {
+        tempNode->father=node;
+    }
+    // correcting root
+    if (newHead->father == nullptr)
+    {
+        this->root = newHead;
+    }
+    // correcting number of sons
+    node->numOfLeftSons = newHead->numOfRightSons; //node-> rightsons doesn't change
+    newHead->numOfRightSons += node->numOfRightSons + 1;  //  newHead->numOfLeftSons doesn't change
+
+
 }
 
 void AVL_Tree::printLevelOrder() {

@@ -17,8 +17,8 @@ public:
     int getNumOfNodes() const{return this->numOfNodes;};
     void searchAndAdd (int content);
     void searchAndDelete(int content);
-    static void leftRoll(Node* node);
-    static void rightRoll(Node* node);
+    void leftRoll(Node* node);
+    void rightRoll(Node* node);
     void printLevelOrder(); //FOR DEBUGGING
 };
 

@@ -6,14 +6,25 @@
 void Node::addLeftSon(Node *son)
 {
     this->leftSon = son;
-    this->numOfLeftSons++;
+    Node* currentFather = son->father;
+    while(currentFather != nullptr)
+    {
+        currentFather->numOfLeftSons++;
+        currentFather = currentFather->father;
+    }
 }
 
 //
 void Node::addRightSon(Node *son)
 {
     this->rightSon = son;
-    this->numOfRightSons++;
+    Node* currentFather = son->father;
+    while(currentFather != nullptr)
+    {
+        currentFather->numOfRightSons++;
+        currentFather = currentFather->father;
+    }
+
 }
 int Node::updateHeight()
 {

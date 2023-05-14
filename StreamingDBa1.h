@@ -19,9 +19,9 @@
 #include "AVL_Tree.h"
 class streaming_database {
 private:
-	//
-	// Here you may add anything you want
-	//
+    AVL_Tree movies;
+    AVL_Tree users;
+    AVL_Tree groups;
 	
 public:
 	// <DO-NOT-MODIFY> {

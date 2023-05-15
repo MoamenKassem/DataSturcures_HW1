@@ -39,13 +39,49 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     ptr->changeVip(vipOnly);
     ptr->changeGenre(genre);
     ptr->changeViews(views);
-	return StatusType::SUCCESS;
+    switch (genre) {
+        case Genre::COMEDY:
+            comedyMovies.searchAndAdd(movieId);
+            break;
+        case Genre::ACTION:
+            actionMovies.searchAndAdd(movieId);
+            break;
+        case Genre::FANTASY:
+            fantasyMovies.searchAndAdd(movieId);
+            break;
+        case Genre::DRAMA:
+            dramaMovies.searchAndAdd(movieId);
+            break;
+        case Genre::NONE:
+            NoneMovies.searchAndAdd(movieId);
+            break;
+    }
+    return StatusType::SUCCESS;
 }
 
 StatusType streaming_database::remove_movie(int movieId)
 {
 	if(movieId <=0){
         return StatusType::INVALID_INPUT;
+    }
+    Node* curMovie = movies.search(movieId);
+
+    switch (curMovie->genre) {
+        case Genre::COMEDY:
+            comedyMovies.searchAndDelete(movieId);
+            break;
+        case Genre::ACTION:
+            actionMovies.searchAndDelete(movieId);
+            break;
+        case Genre::FANTASY:
+            fantasyMovies.searchAndDelete(movieId);
+            break;
+        case Genre::DRAMA:
+            dramaMovies.searchAndDelete(movieId);
+            break;
+        case Genre::NONE:
+            NoneMovies.searchAndDelete(movieId);
+            break;
     }
 	return movies.searchAndDelete(movieId);
 }

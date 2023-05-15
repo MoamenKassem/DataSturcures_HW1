@@ -22,7 +22,12 @@ private:
     AVL_Tree movies;
     AVL_Tree users;
     AVL_Tree groups;
-	
+
+    AVL_Tree comedyMovies;
+    AVL_Tree actionMovies;
+    AVL_Tree dramaMovies;
+    AVL_Tree fantasyMovies;
+    AVL_Tree NoneMovies;
 public:
 	// <DO-NOT-MODIFY> {
 	

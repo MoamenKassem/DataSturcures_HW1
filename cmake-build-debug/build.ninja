@@ -70,6 +70,13 @@ build CMakeFiles\DataSturcures_HW1.dir\Node.cpp.obj: CXX_COMPILER__DataSturcures
   TARGET_COMPILE_PDB = CMakeFiles\DataSturcures_HW1.dir\
   TARGET_PDB = DataSturcures_HW1.pdb
 
+build CMakeFiles\DataSturcures_HW1.dir\StreamingDBa1.cpp.obj: CXX_COMPILER__DataSturcures_HW1_Debug C$:\Users\LENOVO\Downloads\DataSturcures_HW1\StreamingDBa1.cpp || cmake_object_order_depends_target_DataSturcures_HW1
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi
+  OBJECT_DIR = CMakeFiles\DataSturcures_HW1.dir
+  OBJECT_FILE_DIR = CMakeFiles\DataSturcures_HW1.dir
+  TARGET_COMPILE_PDB = CMakeFiles\DataSturcures_HW1.dir\
+  TARGET_PDB = DataSturcures_HW1.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target DataSturcures_HW1
@@ -78,7 +85,7 @@ build CMakeFiles\DataSturcures_HW1.dir\Node.cpp.obj: CXX_COMPILER__DataSturcures
 #############################################
 # Link the executable DataSturcures_HW1.exe
 
-build DataSturcures_HW1.exe: CXX_EXECUTABLE_LINKER__DataSturcures_HW1_Debug CMakeFiles\DataSturcures_HW1.dir\AVL_Tree.cpp.obj CMakeFiles\DataSturcures_HW1.dir\maina1.cpp.obj CMakeFiles\DataSturcures_HW1.dir\Node.cpp.obj
+build DataSturcures_HW1.exe: CXX_EXECUTABLE_LINKER__DataSturcures_HW1_Debug CMakeFiles\DataSturcures_HW1.dir\AVL_Tree.cpp.obj CMakeFiles\DataSturcures_HW1.dir\maina1.cpp.obj CMakeFiles\DataSturcures_HW1.dir\Node.cpp.obj CMakeFiles\DataSturcures_HW1.dir\StreamingDBa1.cpp.obj
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi
   LINK_FLAGS = /machine:X86 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib

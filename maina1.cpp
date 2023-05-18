@@ -8,11 +8,16 @@
 // The following main file is necessary to link and run your code.
 // This file is READ ONLY: even if you submit something else, the compiler ..
 // .. WILL use our file.
-// 
+//
+
+
+
 
 #include "StreamingDBa1.h"
 #include <string>
 #include <iostream>
+
+
 
 using namespace std;
 
@@ -22,7 +27,44 @@ void query_get_all_movies(string cmd, streaming_database *obj, Genre genre);
 
 int main()
 {
-
+    streaming_database *testing = new streaming_database();
+    testing->add_user(1,0);
+    testing->add_user(2,1);
+    testing->add_user(3,1);
+    testing->add_group(1);
+    testing->add_group(2);
+    testing->add_user_to_group(3,2);
+    testing->add_user_to_group(1,1);
+    testing->add_movie(1,Genre::COMEDY,10,1);
+    testing->add_movie(2, Genre::DRAMA,10,1);
+    testing->add_movie(3,Genre::FANTASY,10,1);
+    testing->add_movie(4,Genre::ACTION,10,1);
+    testing->add_movie(5,Genre::COMEDY,10,1);
+    testing->rate_movie(1,1,50);
+    testing->rate_movie(2,1,100);
+    testing->user_watch(2,1);
+    output_t<int> value = testing->get_num_views(2,Genre::COMEDY);
+    if(value.status()==StatusType::SUCCESS){
+        print("SUCCESS", value);
+    }else{ print("FAILED", value);}
+    testing->group_watch(2,1);
+    output_t<int> value1 = testing->get_num_views(2,Genre::COMEDY);
+    if(value1.status()==StatusType::SUCCESS){
+        print("SUCCESS", value1);
+    }else{ print("FAILED", value1);}
+    testing->user_watch(2,1);
+    testing->group_watch(1,1);
+    testing->add_user_to_group(2,1);
+    testing->remove_group(1);
+    output_t<int> value2 = testing->get_num_views(2,Genre::COMEDY);
+    if(value2.status()==StatusType::SUCCESS){
+        print("SUCCESS", value2);
+    }else{ print("FAILED", value2);}
+    testing->add_user_to_group(2,2);
+    output_t<int> value3 = testing->get_num_views(2,Genre::COMEDY);
+    if(value3.status()==StatusType::SUCCESS){
+        print("SUCCESS", value3);
+    }else{ print("FAILED", value3);}
     int d1, d2, d3, g1;
     string b1;
     bool b;

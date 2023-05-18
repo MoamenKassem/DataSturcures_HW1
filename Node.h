@@ -1,11 +1,9 @@
-//
-// Created by MKassem360 on 5/10/2023.
-//
+#ifndef DTASTURCURES_HW1_NODE_H
+#define DTASTURCURES_HW1_NODE_H
+
 #include "wet1util.h"
-#ifndef DATASTURCURES_HW1_NODE_H
-#define DATASTURCURES_HW1_NODE_H
 
-
+template<class T>
 class Node {
 public:
     int key;
@@ -13,30 +11,53 @@ public:
     Genre genre;
     bool isVip;
     int views;
-    Node* leftSon;
-    Node* rightSon;
-    Node* father; //if needed
     int numOfLeftSons;
     int numOfRightSons;
     int height;
-    int numberOfUsersInGroup;
-    Node* nextUser;
-    Node* groupUsers;
+    int ComedyViews;
+    int FantasyViews;
+    int DramaViews;
+    int ActionViews;
+    int GroupComedyViews;
+    int GroupFantasyViews;
+    int GroupDramaViews;
+    int GroupActionViews;
+    double rating;
+    int usersRated;
+    Node* leftSon;
+    Node* rightSon;
+    Node* father; //if needed
+    T* curGroup;
+    int groupViews;
+    Node* groupUser;
 
-    void addLeftSon(Node* son);
-    void addRightSon(Node* son);
+    void addLeftSon(Node<T>* son);
+    void addRightSon(Node<T>* son);
+    void swapNodes(Node<T>* node1);
     int getBalanceFactor() const;
     int updateHeight();
-    void swapNodes(Node* node1);
+
+
     Node():content(0),leftSon(nullptr),rightSon(nullptr),
-    father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0),
-    genre(Genre::NONE), isVip(0), views(0), groupUsers(nullptr){};
+           father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0),
+           genre(Genre::NONE), isVip(0), views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), ActionViews(0),
+           curGroup(nullptr), groupViews(0), groupUser(nullptr), GroupActionViews(0), GroupComedyViews(0),
+           GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){};
+
+
     Node(int key, int content,Node* father):key(key),content(content),genre(Genre::NONE),isVip(0),views(0),
-    leftSon(nullptr),rightSon(nullptr),numOfRightSons(0),numOfLeftSons(0),
-    father(father),height(0), groupUsers(nullptr){}
+                                            leftSon(nullptr),rightSon(nullptr),numOfRightSons(0),numOfLeftSons(0),father(father),height(0), ComedyViews(0)
+            , FantasyViews(0), DramaViews(0), ActionViews(0), curGroup(nullptr), groupViews(0), groupUser(nullptr)
+            , GroupActionViews(0), GroupComedyViews(0), GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){}
+
+
     Node(int key):content(0),leftSon(nullptr),rightSon(nullptr),
-    father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(key),
-    genre(Genre::NONE), isVip(0), views(0), groupUsers(nullptr){};
+                  father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(key),
+                  genre(Genre::NONE), isVip(0), views(0), ComedyViews(0),FantasyViews(0), DramaViews(0), ActionViews(0)
+            ,curGroup(nullptr), groupViews(0), groupUser(nullptr)
+            , GroupActionViews(0), GroupComedyViews(0), GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){};
+
+
     ~Node()=default;
     Node(Node&)=default;
     Node& operator=(const Node& other)= default;
@@ -47,4 +68,92 @@ public:
 };
 
 
+template<class T>
+void Node<T>::addLeftSon(Node<T>* son)
+{
+    this->leftSon = son;
+    Node<T>* currentFather = son->father;
+    while(currentFather != nullptr)
+    {
+        currentFather->numOfLeftSons++;
+        currentFather = currentFather->father;
+    }
+}
+
+//
+template<class T>
+void Node<T>::addRightSon(Node<T>* son)
+{
+    this->rightSon = son;
+    Node<T>* currentFather = son->father;
+    while(currentFather != nullptr)
+    {
+        currentFather->numOfRightSons++;
+        currentFather = currentFather->father;
+    }
+
+}
+template<class T>
+int Node<T>::updateHeight()
+{
+    int leftHeight,rightHeight;
+    if(this->leftSon == nullptr)
+    {
+        leftHeight = -1;
+    }
+    else
+    {
+        leftHeight= this->leftSon->height;
+    }
+    if(this->rightSon == nullptr)
+    {
+        rightHeight = -1;
+    }
+    else
+    {
+        rightHeight= this->rightSon->height;
+    }
+
+    if(leftHeight > rightHeight)
+    {
+        this->height = leftHeight+1;
+        return height;
+    }
+    this->height = rightHeight+1;
+    return height;
+}
+
+template<class T>
+int Node<T>::getBalanceFactor() const
+{
+    int leftHeight,rightHeight;
+    if(this->leftSon == nullptr)
+    {
+        leftHeight = -1;
+    } else
+    {
+        leftSon->updateHeight();
+        leftHeight = leftSon->height;
+    }
+    if(this->rightSon == nullptr)
+    {
+        rightHeight = -1;
+    } else
+    {
+
+        rightSon->updateHeight();
+        rightHeight = rightSon->height;
+    }
+    return leftHeight-rightHeight;
+}
+
+template<class T>
+void Node<T>::swapNodes(Node<T>* node1)
+{
+    Node<T>* temp= new Node();
+    copyNodeContent(temp,node1);
+    copyNodeContent(node1,this);
+    copyNodeContent(this,temp);
+
+}
 #endif //DATASTURCURES_HW1_NODE_H

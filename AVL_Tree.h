@@ -670,14 +670,16 @@ template<class T>
 T* AVL_Tree<T>::search(int content){
     T* ptr = this->root;
     while (ptr){
+        if (content == ptr->content){
+            return ptr;
+        }
         if (content < ptr->content){
             ptr = ptr->leftSon;
+            continue;
         }
         if (content > ptr->content){
             ptr = ptr->rightSon;
-        }
-        if (content == ptr->content){
-            return ptr;
+            continue;
         }
     }
     return new T(-1);

@@ -17,10 +17,10 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-
-
-
 using namespace std;
+
+
+string OUTPUT_FILE_LOCATION = "C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/CurrentOutput.txt";
 
 void print(string cmd, StatusType res);
 void print(string cmd, output_t<int> res);
@@ -28,8 +28,8 @@ void query_get_all_movies(string cmd, streaming_database *obj, Genre genre);
 
 int main()
 {
-    std::ofstream myfile("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/CurrentOutput.txt"); // Without append
-    myfile.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/CurrentOutput.txt",ios::app);
+    std::ofstream myfile(OUTPUT_FILE_LOCATION); // Without append
+    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
     int d1, d2, d3, g1;
     string b1;
     bool b;
@@ -131,14 +131,14 @@ static const char *StatusTypeStr[] =
 void print(string cmd, StatusType res)
 {
     std::ofstream myfile;
-    myfile.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/CurrentOutput.txt",ios::app);
+    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
     myfile << cmd << ": " << StatusTypeStr[(int) res] << endl;
 }
 
 void print(string cmd, output_t<int> res)
 {
     std::ofstream myfile;
-    myfile.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/CurrentOutput.txt",ios::app);
+    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
     if (res.status() == StatusType::SUCCESS) {
         myfile << cmd << ": " << StatusTypeStr[(int) res.status()] << ", " << res.ans() << endl;
     } else {
@@ -149,7 +149,7 @@ void print(string cmd, output_t<int> res)
 void query_get_all_movies(string cmd, streaming_database *obj, Genre genre)
 {
     std::ofstream myfile;
-    myfile.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/CurrentOutput.txt",ios::app);
+    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
     output_t<int> count = obj->get_all_movies_count(genre);
     int to_alloc = count.ans();
     if (to_alloc == 0)

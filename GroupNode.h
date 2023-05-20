@@ -49,7 +49,7 @@ public:
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}
     group_node(int key1):content(0),leftSon(nullptr),rightSon(nullptr),
-                         father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0), isVip(0),
+                         father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(key1), isVip(0),
                          views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}

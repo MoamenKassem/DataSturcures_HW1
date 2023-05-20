@@ -227,6 +227,7 @@ void incrementAndDelete(Node<group_node>* ptr, const group_node* group){
                                  - ptr->groupUser->GroupDramaViews;
     ptr->groupUser->ComedyViews = ptr->groupUser->ComedyViews + group->ComedyWatched
                                   - ptr->groupUser->GroupComedyViews;
+    ptr->groupUser->curGroup = nullptr;
     delete ptr;
 }
 StatusType streaming_database::remove_group(int groupId)
@@ -258,6 +259,9 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
         return StatusType::FAILURE;
     }
     group_node* group = groups.search(groupId); // O(log(m))
+    if(!group){
+        return StatusType::ALLOCATION_ERROR;
+    }
     if (group->key == -1){
         delete group;
         return StatusType::FAILURE;
@@ -326,25 +330,44 @@ StatusType streaming_database::user_watch(int userId, int movieId)
             user->ComedyViews++;
             comedyMovies.searchAndDeleteRating(movie->rating,movie->views-1,movie->content);
             comedyMovies.searchAndAddRating(curMovie);
-
+            if(user->curGroup)
+            {
+                user->curGroup->ComedyViews++;
+                user->curGroup->views++;
+            }
             break;
         case Genre::ACTION:
             user->ActionViews++;
             actionMovies.searchAndDeleteRating(movie->rating,movie->views-1,movie->content);
             actionMovies.searchAndAddRating(curMovie);
             maxRatingActionMovie = actionMovies.getMax();
+            if(user->curGroup)
+            {
+                user->curGroup->ActionViews++;
+                user->curGroup->views++;
+            }
             break;
         case Genre::FANTASY:
             user->FantasyViews++;
             fantasyMovies.searchAndDeleteRating(movie->rating,movie->views-1,movie->content);
             fantasyMovies.searchAndAddRating(curMovie);
             maxRatingFantasyMovie = fantasyMovies.getMax();
+            if(user->curGroup)
+            {
+                user->curGroup->FantasyViews++;
+                user->curGroup->views++;
+            }
             break;
         case Genre::DRAMA:
             user->DramaViews++;
             dramaMovies.searchAndDeleteRating(movie->rating,movie->views-1,movie->content);
             dramaMovies.searchAndAddRating(curMovie);
             maxRatingDramaMovie = dramaMovies.getMax();
+            if(user->curGroup)
+            {
+                user->curGroup->DramaViews++;
+                user->curGroup->views++;
+            }
             break;
         case Genre::NONE:
             break;
@@ -398,6 +421,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                                                movie->views-group->members.getNumOfNodes(),movie->content);
             comedyMovies.searchAndAddRating(curMovie);
             maxRatingComedyMovie = comedyMovies.getMax();
+            group->ComedyViews += group->members.getNumOfNodes();
             break;
         case Genre::ACTION:
             group->ActionWatched++;
@@ -405,6 +429,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                                                movie->views-group->members.getNumOfNodes(),movie->content);
             actionMovies.searchAndAddRating(curMovie);
             maxRatingActionMovie = actionMovies.getMax();
+            group->ActionViews += group->members.getNumOfNodes();
             break;
         case Genre::FANTASY:
             group->FantasyWatched++;
@@ -412,6 +437,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                                                 movie->views-group->members.getNumOfNodes(),movie->content);
             fantasyMovies.searchAndAddRating(curMovie);
             maxRatingFantasyMovie = fantasyMovies.getMax();
+            group->FantasyViews += group->members.getNumOfNodes();
             break;
         case Genre::DRAMA:
             group->DramaWatched++;
@@ -419,6 +445,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
                                               movie->views-group->members.getNumOfNodes(),movie->content);
             dramaMovies.searchAndAddRating(curMovie);
             maxRatingDramaMovie = dramaMovies.getMax();
+            group->DramaViews += group->members.getNumOfNodes();
             break;
         case Genre::NONE:
             break;
@@ -619,12 +646,26 @@ output_t<int> streaming_database::get_group_recommendation(int groupId) // not f
                                           group->ComedyViews,group->FantasyViews);
     switch (groupFavorite) {
         case 0:
+            if(comedyMovies.getNumOfNodes() == 0){
+                return StatusType::FAILURE;
+            }
             return maxRatingComedyMovie->content;
         case 1:
+            if(dramaMovies.getNumOfNodes() == 0){
+                return StatusType::FAILURE;
+            }
             return maxRatingDramaMovie->content;
         case 2:
+            if(actionMovies.getNumOfNodes()==0)
+            {
+                return StatusType::FAILURE;
+            }
             return maxRatingActionMovie->content;
         case 3:
+            if(fantasyMovies.getNumOfNodes()==0)
+            {
+                return StatusType::FAILURE;
+            }
             return maxRatingFantasyMovie->content;
     }
     return StatusType::FAILURE;

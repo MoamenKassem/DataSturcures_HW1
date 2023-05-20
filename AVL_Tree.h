@@ -501,9 +501,13 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                     }
                     if(nodeToSwitch->father->leftSon == nodeToSwitch)
                     {
-                        nodeToSwitch->father->leftSon = nullptr;
+
+                        nodeToSwitch->father->rightSon = nodeToSwitch->rightSon;
+
                     }
-                    else{nodeToSwitch->father->rightSon = nullptr; }
+                    else{
+                        nodeToSwitch->father->rightSon = nodeToSwitch->rightSon;
+                    }
                     currentFatherNodePtr = nodeToSwitch->father;
                     nodeToSwitch->father = nullptr;
                     nodeToSwitch->swapNodes(currentNodePtr);

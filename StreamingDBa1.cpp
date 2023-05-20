@@ -370,6 +370,9 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     if(movie->isVip && !group->isVip){
         return StatusType::FAILURE;
     }
+    if(group->members.getNumOfNodes() == 0){
+        return StatusType::FAILURE;
+    }
     StatusType status = moviesRating.searchAndDeleteRating(movie->rating,movie->views,movie->content);
     if(status != StatusType::SUCCESS){
         return status;
@@ -607,6 +610,9 @@ output_t<int> streaming_database::get_group_recommendation(int groupId) // not f
     group_node* group = groups.search(groupId); // O(log(m))
     if(group->key == -1){
         delete group;
+        return StatusType::FAILURE;
+    }
+    if(group->members.getNumOfNodes() == 0){
         return StatusType::FAILURE;
     }
     int groupFavorite = max_view_in_group(group->ActionViews,group->DramaViews,

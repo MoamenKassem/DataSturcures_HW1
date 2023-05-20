@@ -118,6 +118,10 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
 {
 // Search
     T* currentNodePtr = this->root;
+    if (currentNodePtr == nullptr) //no members yet
+    {
+        return StatusType::FAILURE;
+    }
     T* currentFatherNodePtr = nullptr;
     while(currentNodePtr != nullptr)
     {

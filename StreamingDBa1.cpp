@@ -281,6 +281,11 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
     user->GroupActionViews = group->ActionWatched;
     copyNodeContent(groupUser,user);
     groupUser->groupUser = user;
+    group->views+=user->views;
+    group->ComedyViews+= user->ComedyViews;
+    group->DramaViews+= user->DramaViews;
+    group->ActionViews+= user->ActionViews;
+    group->FantasyViews+= user->FantasyViews;
     StatusType status = group->members.searchAndAdd(groupUser);
     if(status != StatusType::SUCCESS){
         delete groupUser;

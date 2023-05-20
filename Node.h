@@ -26,7 +26,7 @@ public:
     int usersRated;
     Node* leftSon;
     Node* rightSon;
-    Node* father; //if needed
+    Node* father;
     T* curGroup;
     int groupViews;
     Node* groupUser;

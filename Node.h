@@ -6,30 +6,30 @@
 template<class T>
 class Node {
 public:
-    int key;
     int content;
+    Node* leftSon;
+    Node* rightSon;
+    Node* father;
+    int numOfRightSons;
+    int numOfLeftSons;
+    int height;
+    int key;
     Genre genre;
     bool isVip;
     int views;
-    int numOfLeftSons;
-    int numOfRightSons;
-    int height;
     int ComedyViews;
     int FantasyViews;
     int DramaViews;
     int ActionViews;
-    int GroupComedyViews;
-    int GroupFantasyViews;
-    int GroupDramaViews;
-    int GroupActionViews;
-    double rating;
-    int usersRated;
-    Node* leftSon;
-    Node* rightSon;
-    Node* father;
     T* curGroup;
     int groupViews;
     Node* groupUser;
+    int GroupActionViews;
+    int GroupComedyViews;
+    int GroupDramaViews;
+    int GroupFantasyViews;
+    double rating;
+    int usersRated;
 
     void addLeftSon(Node<T>* son);
     void addRightSon(Node<T>* son);
@@ -40,31 +40,31 @@ public:
 
     Node():content(0),leftSon(nullptr),rightSon(nullptr),
            father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0),
-           genre(Genre::NONE), isVip(0), views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), ActionViews(0),
+           genre(Genre::NONE), isVip(false), views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), ActionViews(0),
            curGroup(nullptr), groupViews(0), groupUser(nullptr), GroupActionViews(0), GroupComedyViews(0),
            GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){};
 
 
-    Node(int key, int content,Node* father):key(key),content(content),genre(Genre::NONE),isVip(0),views(0),
-                                            leftSon(nullptr),rightSon(nullptr),numOfRightSons(0),numOfLeftSons(0),father(father),height(0), ComedyViews(0)
-            , FantasyViews(0), DramaViews(0), ActionViews(0), curGroup(nullptr), groupViews(0), groupUser(nullptr)
-            , GroupActionViews(0), GroupComedyViews(0), GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){}
+    Node(int key, int content,Node* father):content(content),leftSon(nullptr),rightSon(nullptr),
+    father(father),numOfRightSons(0),numOfLeftSons(0),height(0),key(key),
+    genre(Genre::NONE), isVip(false), views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), ActionViews(0),
+    curGroup(nullptr), groupViews(0), groupUser(nullptr), GroupActionViews(0), GroupComedyViews(0),
+    GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){};
 
 
-    Node(int key):content(0),leftSon(nullptr),rightSon(nullptr),
+    explicit Node(int key):content(0),leftSon(nullptr),rightSon(nullptr),
                   father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(key),
-                  genre(Genre::NONE), isVip(0), views(0), ComedyViews(0),FantasyViews(0), DramaViews(0), ActionViews(0)
+                  genre(Genre::NONE), isVip(false), views(0), ComedyViews(0),FantasyViews(0), DramaViews(0), ActionViews(0)
             ,curGroup(nullptr), groupViews(0), groupUser(nullptr)
             , GroupActionViews(0), GroupComedyViews(0), GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){};
 
 
-    ~Node()=default;
+    ~Node() = default;
     Node(Node&)=default;
     Node& operator=(const Node& other)= default;
     void changeVip(bool newVip){isVip = newVip;}
     void changeViews(int newViews){views = newViews;}
     void changeGenre(Genre newGenre){genre = newGenre;}
-    void changeContent(int newContent){content = newContent;}
 };
 
 
@@ -156,4 +156,4 @@ void Node<T>::swapNodes(Node<T>* node1)
     copyNodeContent(this,temp);
 
 }
-#endif //DATASTURCURES_HW1_NODE_H
+#endif //DTASTURCURES_HW1_NODE_H

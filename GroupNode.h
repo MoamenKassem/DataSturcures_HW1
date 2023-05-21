@@ -14,42 +14,41 @@
 class group_node
 {
 public:
+    int content;
     group_node* leftSon;
     group_node* rightSon;
     group_node* father;
-    AVL_Tree<Node<group_node>> members;
+    int numOfRightSons;
+    int numOfLeftSons;
+    int height;
     int key;
-    int content;
     bool isVip;
     int views;
-    int numOfLeftSons;
-    int numOfRightSons;
-    int height;
     int ComedyViews;
     int FantasyViews;
     int DramaViews;
-    int ActionViews;
     int moviesWatched;
+    int ActionViews;
     int ComedyWatched;
+    int ActionWatched;
     int FantasyWatched;
     int DramaWatched;
-    int ActionWatched;
     double rating;
+    AVL_Tree<Node<group_node>> members;
 
 
     group_node():content(0),leftSon(nullptr),rightSon(nullptr),
-                 father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0), isVip(0),
+                 father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0), isVip(false),
                  views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0) , ActionViews(0)
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}
     group_node(int key1, int content1,group_node* father1):content(content1),
-                                                           leftSon(nullptr),rightSon(nullptr),
-                                                           father(father1),numOfRightSons(0),numOfLeftSons(0),height(0),key(key1), isVip(0),
-                                                           views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
+    leftSon(nullptr),rightSon(nullptr),father(father1),numOfRightSons(0),numOfLeftSons(0),height(0),key(key1),
+    isVip(false),views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}
-    group_node(int key1):content(0),leftSon(nullptr),rightSon(nullptr),
-                         father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(key1), isVip(0),
+    explicit group_node(int key1):content(0),leftSon(nullptr),rightSon(nullptr),
+                         father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(key1), isVip(false),
                          views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}

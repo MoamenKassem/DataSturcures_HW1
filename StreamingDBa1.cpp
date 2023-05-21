@@ -1,7 +1,7 @@
 #include "AVL_Tree.h"
 #include "wet1util.h"
 #include "StreamingDBa1.h"
-#ifndef NODE
+#ifndef NOD
 #include "Node.h"
 #define NODE
 #endif
@@ -71,8 +71,7 @@ void copyNodeContent(Node<T>* ptr1, const Node<T>* ptr2){
 }
 
 template<class T>
-void deleteTree(T* root){
-    T* ptr = root;
+void deleteTree(T* ptr){
     if(ptr == nullptr){
         return;
     }
@@ -81,8 +80,17 @@ void deleteTree(T* root){
     delete ptr;
 }
 
+void deleteGroups(group_node* ptr){
+    if(ptr == nullptr){
+        return;
+    }
+    deleteGroups(ptr->leftSon);
+    deleteGroups(ptr->rightSon);
+    deleteTree(ptr->members.getRoot());
+}
 streaming_database::~streaming_database()
 {
+    deleteGroups(groups.getRoot());
     deleteTree(users.getRoot());
     deleteTree(groups.getRoot());
     deleteTree(movies.getRoot());
@@ -100,15 +108,25 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
         return StatusType::INVALID_INPUT;
     }
     Node<group_node>* movie = new Node<group_node>(0,movieId, nullptr);
-    if(!movie){
+    if(movie == nullptr){
         return StatusType::ALLOCATION_ERROR;
     }
     StatusType status = movies.searchAndAdd(movie);
     if(status != StatusType::SUCCESS){
+        delete movie;
         return status;
     }
     Node<group_node>* genreMovie = new Node<group_node>(0,movieId, nullptr);
+    if(genreMovie == nullptr){
+        movies.searchAndDelete(movie->content);
+        return StatusType::ALLOCATION_ERROR;
+    }
     Node<group_node>* rattingMovie = new Node<group_node>(0,movieId, nullptr);
+    if(rattingMovie == nullptr){
+        movies.searchAndDelete(movie->content);
+        delete genreMovie;
+        return StatusType::ALLOCATION_ERROR;
+    }
     movie->changeVip(vipOnly);
     movie->changeGenre(genre);
     movie->changeViews(views);
@@ -132,6 +150,8 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
             dramaMovies.searchAndAddRating(genreMovie);
             maxRatingDramaMovie = dramaMovies.getMax();
             return StatusType::SUCCESS;
+        default:
+            return StatusType::FAILURE;
     }
     return StatusType::SUCCESS;
 }
@@ -163,6 +183,8 @@ StatusType streaming_database::remove_movie(int movieId)
             dramaMovies.searchAndDeleteRating(curMovie->rating,curMovie->views,curMovie->content);
             maxRatingDramaMovie = dramaMovies.getMax();
             break;
+        default:
+            return StatusType::FAILURE;
     }
 
     moviesRating.searchAndDeleteRating(curMovie->rating,curMovie->views,curMovie->content);
@@ -180,6 +202,7 @@ StatusType streaming_database::add_user(int userId, bool isVip)
     }
     StatusType status = users.searchAndAdd(user);
     if(status != StatusType::SUCCESS){
+        delete user;
         return status;
     }
     user->changeVip(isVip);
@@ -192,7 +215,16 @@ StatusType streaming_database::remove_user(int userId)
     if(userId <=0){
         return StatusType::INVALID_INPUT;
     }
-    return users.searchAndDelete(userId);
+    Node<group_node>* user = users.search(userId); //O(log(n))
+    if(user->key == -1){
+        delete user;
+        return StatusType::FAILURE;
+    }
+    if(user->curGroup)
+    {
+        user->curGroup->members.searchAndDelete(userId); //O(log(n))
+    }
+    return users.searchAndDelete(userId); //O(log(n))
 }
 
 StatusType streaming_database::add_group(int groupId)
@@ -206,12 +238,14 @@ StatusType streaming_database::add_group(int groupId)
     }
     StatusType status = groups.searchAndAdd(group);
     if(status != StatusType::SUCCESS){
+        delete group;
         return status;
     }
     group->views = 0;
     group->isVip = false;
     return StatusType::SUCCESS;
 }
+
 void incrementAndDelete(Node<group_node>* ptr, const group_node* group){
     if(!ptr){
         return;
@@ -320,10 +354,14 @@ StatusType streaming_database::user_watch(int userId, int movieId)
     movie->views++;
 
     Node<group_node>* curMovie2 = new Node<group_node>(0,movieId, nullptr);
+    if(!curMovie2){
+        return StatusType::ALLOCATION_ERROR;
+    }
     copyNodeContent(curMovie2,movie);
 
     StatusType status2 = moviesRating.searchAndAddRating(curMovie2);
-    if(status != StatusType::SUCCESS){
+    if(status2 != StatusType::SUCCESS){
+        delete curMovie2;
         return status;
     }
 
@@ -408,15 +446,22 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     movie->views+=group->members.getNumOfNodes();
 
     Node<group_node>* curMovie2 = new Node<group_node>(0,movieId, nullptr);
+    if(!curMovie2){
+        return StatusType::ALLOCATION_ERROR;
+    }
     copyNodeContent(curMovie2,movie);
 
     StatusType status2 = moviesRating.searchAndAddRating(curMovie2);
-    if(status != StatusType::SUCCESS){
+    if(status2!= StatusType::SUCCESS){
+        delete curMovie2;
         return status;
     }
 
 
     Node<group_node>* curMovie = new Node<group_node>(0,movieId, nullptr);
+    if(curMovie == nullptr){
+        return StatusType::ALLOCATION_ERROR;
+    }
     copyNodeContent(curMovie,movie);
     group->moviesWatched++;
     switch (movie->genre) {
@@ -581,22 +626,27 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
         return StatusType::FAILURE;
     }
     double oldRating = movie->rating;
-    StatusType status = moviesRating.searchAndDeleteRating(oldRating,movie->views,movie->content);
-    if(status != StatusType::SUCCESS){
-        return status;
-    }
-
-
     movie->rating*=movie->usersRated;
     movie->rating+=rating;
     movie->usersRated++;
     movie->rating/=movie->usersRated;
 
     Node<group_node>* curMovie2 = new Node<group_node>(0,movieId, nullptr);
+    if(!curMovie2){
+        return StatusType::ALLOCATION_ERROR;
+    }
+
+    StatusType status = moviesRating.searchAndDeleteRating(oldRating,movie->views,movie->content);
+    if(status != StatusType::SUCCESS){
+        return status;
+    }
+
     copyNodeContent(curMovie2,movie);
 
+
     StatusType status2 = moviesRating.searchAndAddRating(curMovie2);
-    if(status != StatusType::SUCCESS){
+    if(status2 != StatusType::SUCCESS){
+        delete curMovie2;
         return status;
     }
 

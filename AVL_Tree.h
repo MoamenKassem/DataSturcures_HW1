@@ -21,15 +21,6 @@ public:
     T* getMax();
     void leftRoll(T* node);
     void rightRoll(T* node);
-    void printLevelOrder(); //FOR DEBUGGING
-    void printTree(T* ptr){
-        if(ptr == nullptr){
-            return;
-        }
-        printTree(ptr->leftSon);
-        std::cout << ptr->content << ",  ";
-        printTree(ptr->rightSon);
-    }
 };
 
 template<class T>
@@ -37,7 +28,6 @@ StatusType AVL_Tree<T>::searchAndAdd(T* toInsert)
 {
     // Search
 
-    int toInsert_index= toInsert->content;
     T* currentNodePtr = this->root;
     T* currentFatherNodePtr = nullptr;
     while(currentNodePtr != nullptr)
@@ -122,8 +112,8 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
     {
         return StatusType::FAILURE;
     }
-    T* currentFatherNodePtr = nullptr;
-    while(currentNodePtr != nullptr)
+    T* currentFatherNodePtr;
+    while(true)
     {
         if (currentNodePtr->content == content)
         {
@@ -135,17 +125,20 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
                 //deleting root
                 if (currentNodePtr->father == nullptr)
                 {
-                    root = nullptr;
                     numOfNodes--;
+                    delete currentNodePtr;
+                    root = nullptr;
                     return StatusType::SUCCESS;
                 }
 
                 if (currentNodePtr->father->rightSon == currentNodePtr)
                 {
                     currentNodePtr->father->rightSon = nullptr;
+                    delete currentNodePtr;
                     break;
                 }
                 currentNodePtr->father->leftSon = nullptr;
+                delete currentNodePtr;
                 break;
             }
             // has just one son
@@ -157,6 +150,7 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
                     root = currentNodePtr->rightSon;
                     currentNodePtr->rightSon->father = nullptr;
                     numOfNodes--;
+                    delete currentNodePtr;
                     return StatusType::SUCCESS;
                 }
 
@@ -164,10 +158,12 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
                 {
                     currentNodePtr->father->rightSon = currentNodePtr->rightSon;
                     currentNodePtr->rightSon->father = currentNodePtr->father;
+                    delete currentNodePtr;
                     break;
                 }
                 currentNodePtr->father->leftSon = currentNodePtr->rightSon;
                 currentNodePtr->rightSon->father = currentNodePtr->father;
+                delete currentNodePtr;
                 break;
             }
             if(currentNodePtr->leftSon != nullptr && currentNodePtr->rightSon == nullptr)
@@ -178,14 +174,18 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
                     root = currentNodePtr->leftSon;
                     currentNodePtr->leftSon->father = nullptr;
                     numOfNodes--;
+                    delete currentNodePtr;
                     return StatusType::SUCCESS;
                 }
 
                 if (currentNodePtr->father->rightSon == currentNodePtr)
                 {
                     currentNodePtr->father->rightSon = currentNodePtr->leftSon;
+                    delete currentNodePtr;
+                    break;
                 }
                 currentNodePtr->father->leftSon = currentNodePtr->leftSon;
+                delete currentNodePtr;
                 break;
             }
             // has two sons
@@ -203,6 +203,7 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
             currentFatherNodePtr = nodeToSwitch->father;
             nodeToSwitch->father = nullptr;
             nodeToSwitch->swapNodes(currentNodePtr);
+            delete nodeToSwitch;
             break;
         }
         if (currentNodePtr->content < content)
@@ -439,6 +440,7 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         //deleting root
                         if (currentNodePtr->father == nullptr)
                         {
+                            delete currentNodePtr;
                             root = nullptr;
                             numOfNodes--;
                             return StatusType::SUCCESS;
@@ -446,9 +448,11 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
 
                         if (currentNodePtr->father->rightSon == currentNodePtr)
                         {
+                            delete currentNodePtr;
                             currentNodePtr->father->rightSon = nullptr;
                             break;
                         }
+                        delete currentNodePtr;
                         currentNodePtr->father->leftSon = nullptr;
                         break;
                     }
@@ -458,6 +462,7 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         //deleting root
                         if (currentNodePtr->father == nullptr)
                         {
+                            delete root;
                             root = currentNodePtr->rightSon;
                             currentNodePtr->rightSon->father = nullptr;
                             numOfNodes--;
@@ -468,10 +473,12 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         {
                             currentNodePtr->father->rightSon = currentNodePtr->rightSon;
                             currentNodePtr->rightSon->father = currentNodePtr->father;
+                            delete currentNodePtr;
                             break;
                         }
                         currentNodePtr->father->leftSon = currentNodePtr->rightSon;
                         currentNodePtr->rightSon->father = currentNodePtr->father;
+                        delete currentNodePtr;
                         break;
                     }
                     if(currentNodePtr->leftSon != nullptr && currentNodePtr->rightSon == nullptr)
@@ -481,6 +488,7 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         {
                             root = currentNodePtr->leftSon;
                             currentNodePtr->leftSon->father = nullptr;
+                            delete currentNodePtr;
                             numOfNodes--;
                             return StatusType::SUCCESS;
                         }
@@ -488,8 +496,11 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         if (currentNodePtr->father->rightSon == currentNodePtr)
                         {
                             currentNodePtr->father->rightSon = currentNodePtr->leftSon;
+                            delete currentNodePtr;
+                            break;
                         }
                         currentNodePtr->father->leftSon = currentNodePtr->leftSon;
+                        delete currentNodePtr;
                         break;
                     }
                     // has two sons
@@ -515,6 +526,7 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                     currentFatherNodePtr = nodeToSwitch->father;
                     nodeToSwitch->father = nullptr;
                     nodeToSwitch->swapNodes(currentNodePtr);
+                    delete nodeToSwitch;
                     break;
                 }
                 if (currentNodePtr->content > content)
@@ -707,30 +719,8 @@ T* AVL_Tree<T>::getMax(){
         }
         head = head->rightSon;
     }
+    return nullptr;
 }
-template<class T>
-void AVL_Tree<T>::printLevelOrder() {
-    if (root == nullptr) {
-        return;
-    }
-    std::queue<T*> q;
-    q.push(root);
-    while (!q.empty()) {
-        int size = q.size();
-        for (int i = 0; i < size; i++) {
-            T* curr = q.front();
-            q.pop();
-            if (curr != nullptr) {
-                std::cout << curr->content << " ";
-                q.push(curr->leftSon);
-                q.push(curr->rightSon);
-            } else {
-                std::cout << "null ";
-            }
-        }
-        std::cout << std::endl;
-    }
-    std::cout << "---------------------------------------------------------------------" << std::endl;
-}
+
 // avl_tree end
 #endif //DATASTURCURES_HW1_AVL_TREE_H

@@ -1,7 +1,8 @@
 #ifndef DATASTURCURES_HW1_AVL_TREE_H
 #define DATASTURCURES_HW1_AVL_TREE_H
 #include "wet1util.h"
-
+#include <iostream>
+#include <fstream>
 
 template<class T>
 class AVL_Tree {
@@ -12,7 +13,9 @@ public:
     ~AVL_Tree()=default;
     AVL_Tree(AVL_Tree& avlTree)=default;
     T* getRoot(){return this->root;};
+    void changeRoot(T* ptr){root = ptr;}
     int getNumOfNodes() const{return this->numOfNodes;};
+    void setNumOfNodes(int newNum) {this->numOfNodes = newNum;};
     StatusType searchAndAddRating (T* toInsert);
     T* search(int content);
     StatusType searchAndDeleteRating(double rating, int views, int content);
@@ -21,6 +24,7 @@ public:
     T* getMax();
     void leftRoll(T* node);
     void rightRoll(T* node);
+    void printLevelOrder();
 };
 
 template<class T>
@@ -181,10 +185,12 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
                 if (currentNodePtr->father->rightSon == currentNodePtr)
                 {
                     currentNodePtr->father->rightSon = currentNodePtr->leftSon;
+                    currentNodePtr->leftSon->father = currentNodePtr->father;
                     delete currentNodePtr;
                     break;
                 }
                 currentNodePtr->father->leftSon = currentNodePtr->leftSon;
+                currentNodePtr->leftSon->father = currentNodePtr->father;
                 delete currentNodePtr;
                 break;
             }
@@ -195,15 +201,32 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
             {
                 nodeToSwitch = nodeToSwitch->leftSon;
             }
-            if(nodeToSwitch->father->leftSon == nodeToSwitch)
+            if(root == currentNodePtr)
             {
-                nodeToSwitch->father->leftSon = nullptr;
+                root = nodeToSwitch;
             }
-            else{nodeToSwitch->father->rightSon = nullptr; }
-            currentFatherNodePtr = nodeToSwitch->father;
-            nodeToSwitch->father = nullptr;
             nodeToSwitch->swapNodes(currentNodePtr);
-            delete nodeToSwitch;
+            if(currentNodePtr->father->leftSon == currentNodePtr)
+            {
+                if(currentNodePtr->rightSon == nullptr)
+                {
+                    currentNodePtr->father->leftSon = nullptr;
+                }
+                else
+                {
+                    currentNodePtr->father->leftSon = currentNodePtr->rightSon;
+                }
+                if(currentNodePtr->rightSon !=nullptr)
+                    currentNodePtr->rightSon->father = currentNodePtr->father;
+            }
+            else{
+                currentNodePtr->father->rightSon = currentNodePtr->rightSon;
+                if(currentNodePtr->rightSon !=nullptr)
+                    currentNodePtr->rightSon->father = currentNodePtr->father;
+            }
+            currentFatherNodePtr = currentNodePtr->father;
+            currentNodePtr->father = nullptr;
+            delete currentNodePtr;
             break;
         }
         if (currentNodePtr->content < content)
@@ -226,9 +249,10 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
     // fixing the tree with rolls
 
     int oldHeight = currentFatherNodePtr->height;
-    while(oldHeight != currentFatherNodePtr->updateHeight())
+    int currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
+    while(oldHeight != currentFatherNodePtr->updateHeight() || abs(currentBalanceFactor) == 2)
     {
-        int currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
+
         if(abs(currentBalanceFactor) == 2)
         {
             if(currentBalanceFactor == -2) //balance -2 -> RR/RL
@@ -237,10 +261,20 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
                 {
                     rightRoll(currentFatherNodePtr->rightSon);
                     leftRoll(currentFatherNodePtr);
+                    currentFatherNodePtr = currentFatherNodePtr->father;
+                    if (currentFatherNodePtr == nullptr)
+                        break;
+                    oldHeight = currentFatherNodePtr->height;
+                    currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
                     continue;
                 }
                 //RR
                 leftRoll(currentFatherNodePtr);
+                currentFatherNodePtr = currentFatherNodePtr->father;
+                if (currentFatherNodePtr == nullptr)
+                    break;
+                oldHeight = currentFatherNodePtr->height;
+                currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
                 continue;
 
             }
@@ -249,10 +283,20 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
             {
                 leftRoll(currentFatherNodePtr->leftSon);
                 rightRoll(currentFatherNodePtr);
+                currentFatherNodePtr = currentFatherNodePtr->father;
+                if (currentFatherNodePtr == nullptr)
+                    break;
+                oldHeight = currentFatherNodePtr->height;
+                currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
                 continue;
             }
             //LL
             rightRoll(currentFatherNodePtr);
+            currentFatherNodePtr = currentFatherNodePtr->father;
+            if (currentFatherNodePtr == nullptr)
+                break;
+            oldHeight = currentFatherNodePtr->height;
+            currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
             continue;
         }
 
@@ -260,6 +304,7 @@ StatusType AVL_Tree<T>::searchAndDelete(int content)
         if (currentFatherNodePtr == nullptr)
             break;
         oldHeight = currentFatherNodePtr->height;
+        currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
     }
     this->numOfNodes--;
     return StatusType::SUCCESS;
@@ -440,20 +485,20 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         //deleting root
                         if (currentNodePtr->father == nullptr)
                         {
-                            delete currentNodePtr;
                             root = nullptr;
                             numOfNodes--;
+                            delete currentNodePtr;
                             return StatusType::SUCCESS;
                         }
 
                         if (currentNodePtr->father->rightSon == currentNodePtr)
                         {
-                            delete currentNodePtr;
                             currentNodePtr->father->rightSon = nullptr;
+                            delete currentNodePtr;
                             break;
                         }
-                        delete currentNodePtr;
                         currentNodePtr->father->leftSon = nullptr;
+                        delete currentNodePtr;
                         break;
                     }
                     // has just one son
@@ -462,10 +507,10 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         //deleting root
                         if (currentNodePtr->father == nullptr)
                         {
-                            delete root;
                             root = currentNodePtr->rightSon;
                             currentNodePtr->rightSon->father = nullptr;
                             numOfNodes--;
+                            delete currentNodePtr;
                             return StatusType::SUCCESS;
                         }
 
@@ -496,10 +541,12 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                         if (currentNodePtr->father->rightSon == currentNodePtr)
                         {
                             currentNodePtr->father->rightSon = currentNodePtr->leftSon;
+                            currentNodePtr->leftSon->father = currentNodePtr->father;
                             delete currentNodePtr;
                             break;
                         }
                         currentNodePtr->father->leftSon = currentNodePtr->leftSon;
+                        currentNodePtr->leftSon->father = currentNodePtr->father;
                         delete currentNodePtr;
                         break;
                     }
@@ -510,23 +557,32 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                     {
                         nodeToSwitch = nodeToSwitch->leftSon;
                     }
-                    if(nodeToSwitch->father->leftSon == nodeToSwitch)
+                    if(root == currentNodePtr)
                     {
-                        nodeToSwitch->father->leftSon = nodeToSwitch->rightSon;
-                        if(nodeToSwitch->rightSon !=nullptr)
-                            nodeToSwitch->rightSon->father = nodeToSwitch->father;
-                        nodeToSwitch->father->numOfLeftSons--;
+                        root = nodeToSwitch;
+                    }
+                    nodeToSwitch->swapNodes(currentNodePtr);
+                    if(currentNodePtr->father->leftSon == currentNodePtr)
+                    {
+                        if(currentNodePtr->rightSon == nullptr)
+                        {
+                            currentNodePtr->father->leftSon = nullptr;
+                        }
+                        else
+                        {
+                            currentNodePtr->father->leftSon = currentNodePtr->rightSon;
+                        }
+                        if(currentNodePtr->rightSon !=nullptr)
+                            currentNodePtr->rightSon->father = currentNodePtr->father;
                     }
                     else{
-                        nodeToSwitch->father->rightSon = nodeToSwitch->rightSon;
-                        if(nodeToSwitch->rightSon !=nullptr)
-                            nodeToSwitch->rightSon->father = nodeToSwitch->father;
-                        nodeToSwitch->father->numOfRightSons--;
+                        currentNodePtr->father->rightSon = currentNodePtr->rightSon;
+                        if(currentNodePtr->rightSon !=nullptr)
+                            currentNodePtr->rightSon->father = currentNodePtr->father;
                     }
-                    currentFatherNodePtr = nodeToSwitch->father;
-                    nodeToSwitch->father = nullptr;
-                    nodeToSwitch->swapNodes(currentNodePtr);
-                    delete nodeToSwitch;
+                    currentFatherNodePtr = currentNodePtr->father;
+                    currentNodePtr->father = nullptr;
+                    delete currentNodePtr;
                     break;
                 }
                 if (currentNodePtr->content > content)
@@ -584,9 +640,10 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
     // fixing the tree with rolls
 
     int oldHeight = currentFatherNodePtr->height;
-    while(oldHeight != currentFatherNodePtr->updateHeight())
+    int currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
+    while(oldHeight != currentFatherNodePtr->updateHeight() || abs(currentBalanceFactor) == 2)
     {
-        int currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
+
         if(abs(currentBalanceFactor) == 2)
         {
             if(currentBalanceFactor == -2) //balance -2 -> RR/RL
@@ -595,10 +652,20 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
                 {
                     rightRoll(currentFatherNodePtr->rightSon);
                     leftRoll(currentFatherNodePtr);
+                    currentFatherNodePtr = currentFatherNodePtr->father;
+                    if (currentFatherNodePtr == nullptr)
+                        break;
+                    oldHeight = currentFatherNodePtr->height;
+                    currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
                     continue;
                 }
                 //RR
                 leftRoll(currentFatherNodePtr);
+                currentFatherNodePtr = currentFatherNodePtr->father;
+                if (currentFatherNodePtr == nullptr)
+                    break;
+                oldHeight = currentFatherNodePtr->height;
+                currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
                 continue;
 
             }
@@ -607,10 +674,20 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
             {
                 leftRoll(currentFatherNodePtr->leftSon);
                 rightRoll(currentFatherNodePtr);
+                currentFatherNodePtr = currentFatherNodePtr->father;
+                if (currentFatherNodePtr == nullptr)
+                    break;
+                oldHeight = currentFatherNodePtr->height;
+                currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
                 continue;
             }
             //LL
             rightRoll(currentFatherNodePtr);
+            currentFatherNodePtr = currentFatherNodePtr->father;
+            if (currentFatherNodePtr == nullptr)
+                break;
+            oldHeight = currentFatherNodePtr->height;
+            currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
             continue;
         }
 
@@ -618,6 +695,7 @@ StatusType AVL_Tree<T>::searchAndDeleteRating(double rating, int views, int cont
         if (currentFatherNodePtr == nullptr)
             break;
         oldHeight = currentFatherNodePtr->height;
+        currentBalanceFactor = currentFatherNodePtr->getBalanceFactor();
     }
     this->numOfNodes--;
     return StatusType::SUCCESS;
@@ -651,9 +729,8 @@ void AVL_Tree<T>::leftRoll(T* node)
     {
         newHead->father->leftSon = newHead;
     }
-    // correcting number of sons
-    node->numOfRightSons = newHead->numOfLeftSons; //node-> leftsons doesn't change
-    newHead->numOfLeftSons += node->numOfLeftSons + 1;  //  newHead->rightsons doesn't change
+    node->updateHeight();
+    newHead->updateHeight();
 }
 template<class T>
 void AVL_Tree<T>::rightRoll(T* node)
@@ -683,12 +760,8 @@ void AVL_Tree<T>::rightRoll(T* node)
     {
         newHead->father->leftSon = newHead;
     }
-
-    // correcting number of sons
-    node->numOfLeftSons = newHead->numOfRightSons; //node-> rightsons doesn't change
-    newHead->numOfRightSons += node->numOfRightSons + 1;  //  newHead->numOfLeftSons doesn't change
-
-
+    node->updateHeight();
+    newHead->updateHeight();
 }
 template<class T>
 T* AVL_Tree<T>::search(int content){
@@ -721,6 +794,33 @@ T* AVL_Tree<T>::getMax(){
     }
     return nullptr;
 }
-
+template<class T>
+void AVL_Tree<T>::printLevelOrder() {
+    std::ofstream myfile2;
+    myfile2.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/TreeOutput.txt",std::ios::app);
+    if (root == nullptr) {
+        myfile2 << "null root" << std::endl;
+        myfile2 << "---------------------------------------------------------------------" << std::endl;
+        return;
+    }
+    std::queue<T*> q;
+    q.push(root);
+    while (!q.empty()) {
+        int size = q.size();
+        for (int i = 0; i < size; i++) {
+            T* curr = q.front();
+            q.pop();
+            if (curr != nullptr) {
+                myfile2 << curr->content << "," << curr->views << " ";
+                q.push(curr->leftSon);
+                q.push(curr->rightSon);
+            } else {
+                myfile2 << "null ";
+            }
+        }
+        myfile2 << std::endl;
+    }
+    myfile2 << "---------------------------------------------------------------------" << std::endl;
+}
 // avl_tree end
 #endif //DATASTURCURES_HW1_AVL_TREE_H

@@ -64,6 +64,8 @@ public:
 
     output_t<int> get_group_recommendation(int groupId);
 
+    void deleteAll();
+
     // } </DO-NOT-MODIFY>
 };
 #endif // STREAMINGDBA1_H_

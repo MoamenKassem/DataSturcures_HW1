@@ -1,14 +1,12 @@
 #include "AVL_Tree.h"
 #include "wet1util.h"
 #include "StreamingDBa1.h"
-#ifndef NOD
 #include "Node.h"
-#define NODE
-#endif
 
 
 
-streaming_database::streaming_database()
+streaming_database::streaming_database() : maxRatingActionMovie(nullptr), maxRatingDramaMovie(nullptr),
+maxRatingFantasyMovie(nullptr), maxRatingComedyMovie(nullptr)
 {
     movies = AVL_Tree<Node<group_node>>();
     users = AVL_Tree<Node<group_node>>();
@@ -78,6 +76,7 @@ void deleteTree(T* ptr){
     deleteTree(ptr->leftSon);
     deleteTree(ptr->rightSon);
     delete ptr;
+    ptr = nullptr;
 }
 
 void deleteGroups(group_node* ptr){
@@ -87,18 +86,50 @@ void deleteGroups(group_node* ptr){
     deleteGroups(ptr->leftSon);
     deleteGroups(ptr->rightSon);
     deleteTree(ptr->members.getRoot());
+    ptr->members.changeRoot(nullptr);
 }
+void streaming_database::deleteAll()
+{
+    deleteGroups(groups.getRoot());
+    deleteTree(users.getRoot());
+    users.changeRoot(nullptr);
+    deleteTree(groups.getRoot());
+    groups.changeRoot(nullptr);
+    deleteTree(movies.getRoot());
+    movies.changeRoot(nullptr);
+    deleteTree(comedyMovies.getRoot());
+    comedyMovies.changeRoot(nullptr);
+    deleteTree(actionMovies.getRoot());
+    actionMovies.changeRoot(nullptr);
+    deleteTree(fantasyMovies.getRoot());
+    fantasyMovies.changeRoot(nullptr);
+    deleteTree(dramaMovies.getRoot());
+    dramaMovies.changeRoot(nullptr);
+    deleteTree(moviesRating.getRoot());
+    moviesRating.changeRoot(nullptr);
+}
+
+
+
 streaming_database::~streaming_database()
 {
     deleteGroups(groups.getRoot());
     deleteTree(users.getRoot());
+    users.changeRoot(nullptr);
     deleteTree(groups.getRoot());
+    groups.changeRoot(nullptr);
     deleteTree(movies.getRoot());
+    movies.changeRoot(nullptr);
     deleteTree(comedyMovies.getRoot());
+    comedyMovies.changeRoot(nullptr);
     deleteTree(actionMovies.getRoot());
+    actionMovies.changeRoot(nullptr);
     deleteTree(fantasyMovies.getRoot());
+    fantasyMovies.changeRoot(nullptr);
     deleteTree(dramaMovies.getRoot());
+    dramaMovies.changeRoot(nullptr);
     deleteTree(moviesRating.getRoot());
+    moviesRating.changeRoot(nullptr);
 }
 
 
@@ -107,7 +138,8 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     if(movieId <= 0 || genre == Genre::NONE || views < 0){
         return StatusType::INVALID_INPUT;
     }
-    Node<group_node>* movie = new Node<group_node>(0,movieId, nullptr);
+    Node<group_node> *movie;
+    movie = new Node<group_node>(0, movieId, nullptr);
     if(movie == nullptr){
         return StatusType::ALLOCATION_ERROR;
     }
@@ -133,6 +165,7 @@ StatusType streaming_database::add_movie(int movieId, Genre genre, int views, bo
     copyNodeContent(genreMovie, movie);
     copyNodeContent(rattingMovie, movie);
     moviesRating.searchAndAddRating(rattingMovie);
+    //moviesRating.printLevelOrder();
     switch (genre) {
         case Genre::COMEDY:
             comedyMovies.searchAndAddRating(genreMovie);
@@ -188,6 +221,7 @@ StatusType streaming_database::remove_movie(int movieId)
     }
 
     moviesRating.searchAndDeleteRating(curMovie->rating,curMovie->views,curMovie->content);
+    //moviesRating.printLevelOrder();
     return movies.searchAndDelete(movieId);
 }
 
@@ -241,12 +275,13 @@ StatusType streaming_database::add_group(int groupId)
         delete group;
         return status;
     }
+    groups.printLevelOrder();
     group->views = 0;
     group->isVip = false;
     return StatusType::SUCCESS;
 }
 
-void incrementAndDelete(Node<group_node>* ptr, const group_node* group){
+void incrementAndDelete(Node<group_node>* ptr, group_node* group){
     if(!ptr){
         return;
     }
@@ -262,6 +297,10 @@ void incrementAndDelete(Node<group_node>* ptr, const group_node* group){
     ptr->groupUser->ComedyViews = ptr->groupUser->ComedyViews + group->ComedyWatched
                                   - ptr->groupUser->GroupComedyViews;
     ptr->groupUser->curGroup = nullptr;
+    group->members.setNumOfNodes(group->members.getNumOfNodes()-1);
+    if (group->members.getRoot() == ptr) {
+        group->members.changeRoot(nullptr);
+    }
     delete ptr;
 }
 StatusType streaming_database::remove_group(int groupId)
@@ -276,7 +315,9 @@ StatusType streaming_database::remove_group(int groupId)
     }
     Node<group_node>* ptr = groupToDelete->members.getRoot();
     incrementAndDelete(ptr, groupToDelete);
-    return groups.searchAndDelete(groupId);
+    StatusType status = groups.searchAndDelete(groupId);
+    groups.printLevelOrder();
+    return status;
 }
 
 StatusType streaming_database::add_user_to_group(int userId, int groupId)
@@ -350,6 +391,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
     if(status != StatusType::SUCCESS){
         return status;
     }
+    //moviesRating.printLevelOrder();
     user->views++;
     movie->views++;
 
@@ -364,6 +406,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
         delete curMovie2;
         return status;
     }
+    //moviesRating.printLevelOrder();
 
 
     Node<group_node>* curMovie = new Node<group_node>(0,movieId, nullptr);
@@ -443,6 +486,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     if(status != StatusType::SUCCESS){
         return status;
     }
+    //moviesRating.printLevelOrder();
     movie->views+=group->members.getNumOfNodes();
 
     Node<group_node>* curMovie2 = new Node<group_node>(0,movieId, nullptr);
@@ -456,7 +500,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
         delete curMovie2;
         return status;
     }
-
+    //moviesRating.printLevelOrder();
 
     Node<group_node>* curMovie = new Node<group_node>(0,movieId, nullptr);
     if(curMovie == nullptr){
@@ -640,7 +684,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
     if(status != StatusType::SUCCESS){
         return status;
     }
-
+    //moviesRating.printLevelOrder();
     copyNodeContent(curMovie2,movie);
 
 
@@ -649,7 +693,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
         delete curMovie2;
         return status;
     }
-
+    //moviesRating.printLevelOrder();
 
     Node<group_node>* curMovie = new Node<group_node>(0,movieId, nullptr);
     copyNodeContent(curMovie,movie);

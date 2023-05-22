@@ -18,8 +18,6 @@ public:
     group_node* leftSon;
     group_node* rightSon;
     group_node* father;
-    int numOfRightSons;
-    int numOfLeftSons;
     int height;
     int key;
     bool isVip;
@@ -38,43 +36,95 @@ public:
 
 
     group_node():content(0),leftSon(nullptr),rightSon(nullptr),
-                 father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(0), isVip(false),
+                 father(nullptr),height(0),key(0), isVip(false),
                  views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0) , ActionViews(0)
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}
     group_node(int key1, int content1,group_node* father1):content(content1),
-    leftSon(nullptr),rightSon(nullptr),father(father1),numOfRightSons(0),numOfLeftSons(0),height(0),key(key1),
+    leftSon(nullptr),rightSon(nullptr),father(father1),height(0),key(key1),
     isVip(false),views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}
     explicit group_node(int key1):content(0),leftSon(nullptr),rightSon(nullptr),
-                         father(nullptr),numOfRightSons(0),numOfLeftSons(0),height(0),key(key1), isVip(false),
-                         views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
+    father(nullptr),height(0),key(key1), isVip(false),
+    views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
             ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
     {members = AVL_Tree<Node<group_node>>();}
+
     void addLeftSon(group_node* son){
         this->leftSon = son;
-        group_node* currentFather = son->father;
-        while(currentFather != nullptr)
-        {
-            currentFather->numOfLeftSons++;
-            currentFather = currentFather->father;
-        }
     }
+
     void addRightSon(group_node* son){
         this->rightSon = son;
-        group_node* currentFather = son->father;
-        while(currentFather != nullptr)
-        {
-            currentFather->numOfRightSons++;
-            currentFather = currentFather->father;
-        }
     }
-    void swapNodes(group_node* node1){
-        int temp;
-        temp = this->content;
-        this->content = node1->content;
-        node1->content = temp;
+
+    void swapNodes(group_node* node1)
+    {
+        group_node* temp= new group_node();
+
+        //save temp members
+        temp->height = this->height;
+        temp->rightSon = this->rightSon;
+        temp->leftSon = this->leftSon;
+        if(this->father == node1)
+        {
+            temp->father = this;
+        }
+        else{temp->father = this->father;}
+
+        //change pointers for this node
+
+        if(node1->rightSon == this)
+        {
+            this->rightSon = node1;
+        }
+        else{this->rightSon = node1->rightSon;}
+        this->leftSon = node1->leftSon;
+        this->father = node1->father;
+        this->height = node1->height;
+
+        //change pointers for this node
+
+        node1->rightSon = temp->rightSon;
+        node1->leftSon = temp->leftSon;
+        node1->father = temp->father;
+        node1->height = temp->height;
+
+        delete temp;
+
+        //change this node's members' connections to node1
+
+        if(this->leftSon != nullptr)
+            this->leftSon->father = this;
+        if(this->rightSon != nullptr)
+            this->rightSon->father = this;
+        if (this->father != nullptr)
+        {
+            if(this->father->rightSon == node1)
+            {
+                this->father->rightSon = this;
+            }
+            else{this->father->leftSon = this;}
+
+        }
+
+        //change node1's members' connections to this
+        if(node1->leftSon != nullptr)
+            node1->leftSon->father = node1;
+        if(node1->rightSon != nullptr)
+            node1->rightSon->father = node1;
+        if (node1->father != nullptr && node1->father->rightSon != node1)
+        {
+            if(node1->father->rightSon == this)
+            {
+                node1->father->rightSon = node1;
+            }
+            else{node1->father->leftSon = node1;}
+
+        }
+
+
     }
     int updateHeight()
     {

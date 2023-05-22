@@ -30,6 +30,8 @@ int main()
 {
     std::ofstream myfile(OUTPUT_FILE_LOCATION); // Without append
     myfile.open (OUTPUT_FILE_LOCATION,ios::app);
+    std::ofstream myfile2("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/TreeOutput.txt"); // Without append
+    myfile2.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/TreeOutput.txt",ios::app);
     int d1, d2, d3, g1;
     string b1;
     bool b;
@@ -105,7 +107,7 @@ int main()
             print(op, obj->get_group_recommendation(d1));
         } else {
             myfile << "Unknown command: " << op << endl;
-            return -1;
+            break;
         }
         // Verify no faults
         if (cin.fail()){
@@ -114,7 +116,7 @@ int main()
         }
     }
 
-    // Quit 
+    // Quit
     delete obj;
     return 0;
 }

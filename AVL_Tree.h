@@ -24,7 +24,6 @@ public:
     T* getMax();
     void leftRoll(T* node);
     void rightRoll(T* node);
-    void printLevelOrder();
 };
 
 template<class T>
@@ -794,33 +793,6 @@ T* AVL_Tree<T>::getMax(){
     }
     return nullptr;
 }
-template<class T>
-void AVL_Tree<T>::printLevelOrder() {
-    std::ofstream myfile2;
-    myfile2.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/TreeOutput.txt",std::ios::app);
-    if (root == nullptr) {
-        myfile2 << "null root" << std::endl;
-        myfile2 << "---------------------------------------------------------------------" << std::endl;
-        return;
-    }
-    std::queue<T*> q;
-    q.push(root);
-    while (!q.empty()) {
-        int size = q.size();
-        for (int i = 0; i < size; i++) {
-            T* curr = q.front();
-            q.pop();
-            if (curr != nullptr) {
-                myfile2 << curr->content << "," << curr->views << " ";
-                q.push(curr->leftSon);
-                q.push(curr->rightSon);
-            } else {
-                myfile2 << "null ";
-            }
-        }
-        myfile2 << std::endl;
-    }
-    myfile2 << "---------------------------------------------------------------------" << std::endl;
-}
+
 // avl_tree end
 #endif //DATASTURCURES_HW1_AVL_TREE_H

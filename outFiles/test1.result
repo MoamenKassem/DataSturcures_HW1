@@ -1,0 +1,10 @@
+add_group: SUCCESS
+get_all_movies: FAILURE
+get_all_movies: FAILURE
+get_all_movies: FAILURE
+get_num_views: FAILURE
+get_num_views: FAILURE
+add_user_to_group: FAILURE
+add_group: SUCCESS
+add_user: SUCCESS
+add_user_to_group: SUCCESS

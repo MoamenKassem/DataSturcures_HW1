@@ -416,6 +416,7 @@ StatusType streaming_database::user_watch(int userId, int movieId)
             user->ComedyViews++;
             comedyMovies.searchAndDeleteRating(movie->rating,movie->views-1,movie->content);
             comedyMovies.searchAndAddRating(curMovie);
+            maxRatingComedyMovie = comedyMovies.getMax();
             if(user->curGroup)
             {
                 user->curGroup->ComedyViews++;
@@ -714,7 +715,7 @@ StatusType streaming_database::rate_movie(int userId, int movieId, int rating)
             maxRatingFantasyMovie = fantasyMovies.getMax();
             break;
         case Genre::DRAMA:
-            dramaMovies.searchAndDeleteRating(oldRating,movie->views-1,movie->content);
+            dramaMovies.searchAndDeleteRating(oldRating,movie->views,movie->content);
             dramaMovies.searchAndAddRating(curMovie);
             maxRatingDramaMovie = dramaMovies.getMax();
             break;

@@ -1,8 +1,6 @@
 #ifndef DATASTURCURES_HW1_AVL_TREE_H
 #define DATASTURCURES_HW1_AVL_TREE_H
 #include "wet1util.h"
-#include <iostream>
-#include <fstream>
 
 template<class T>
 class AVL_Tree {

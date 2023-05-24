@@ -88,28 +88,6 @@ void deleteGroups(group_node* ptr){
     deleteTree(ptr->members.getRoot());
     ptr->members.changeRoot(nullptr);
 }
-void streaming_database::deleteAll()
-{
-    deleteGroups(groups.getRoot());
-    deleteTree(users.getRoot());
-    users.changeRoot(nullptr);
-    deleteTree(groups.getRoot());
-    groups.changeRoot(nullptr);
-    deleteTree(movies.getRoot());
-    movies.changeRoot(nullptr);
-    deleteTree(comedyMovies.getRoot());
-    comedyMovies.changeRoot(nullptr);
-    deleteTree(actionMovies.getRoot());
-    actionMovies.changeRoot(nullptr);
-    deleteTree(fantasyMovies.getRoot());
-    fantasyMovies.changeRoot(nullptr);
-    deleteTree(dramaMovies.getRoot());
-    dramaMovies.changeRoot(nullptr);
-    deleteTree(moviesRating.getRoot());
-    moviesRating.changeRoot(nullptr);
-}
-
-
 
 streaming_database::~streaming_database()
 {
@@ -242,6 +220,10 @@ StatusType streaming_database::add_user(int userId, bool isVip)
     return StatusType::SUCCESS;
 }
 
+int addFourInts(int a, int b,int c, int d){
+    return a+b+c+d;
+}
+
 StatusType streaming_database::remove_user(int userId)
 {
     if(userId <=0){
@@ -255,6 +237,23 @@ StatusType streaming_database::remove_user(int userId)
     if(user->curGroup)
     {
         user->curGroup->members.searchAndDelete(userId); //O(log(n))
+        int ActionWatchedInGroup = user->curGroup->ActionWatched - user->GroupActionViews;
+        int DramaWatchedInGroup = user->curGroup->DramaWatched - user->GroupDramaViews;
+        int FantasyWatchedInGroup = user->curGroup->FantasyWatched - user->GroupFantasyViews;
+        int ComedyWatchedInGroup = user->curGroup->ComedyWatched - user->GroupComedyViews;
+        int moviesWatchedInGroup = user->curGroup->moviesWatched - addFourInts(user->GroupFantasyViews,
+                                    user->GroupDramaViews, user->GroupComedyViews, user->GroupActionViews);
+        user->curGroup->views -= (user->views + moviesWatchedInGroup);
+        user->curGroup->ActionViews -= (user->ActionViews + ActionWatchedInGroup);
+        user->curGroup->ComedyViews -= (user->ComedyViews + ComedyWatchedInGroup);
+        user->curGroup->FantasyViews -= (user->FantasyViews + FantasyWatchedInGroup);
+        user->curGroup->DramaViews -= (user->DramaViews + DramaWatchedInGroup);
+        if(user->isVip){
+            user->curGroup->numOfVipUsers--;
+        }
+        if(user->curGroup->numOfVipUsers == 0){
+            user->curGroup->isVip = false;
+        }
     }
     return users.searchAndDelete(userId); //O(log(n))
 }
@@ -338,8 +337,9 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
         return StatusType::FAILURE;
     }
     user->curGroup = group;
-    if(!group->isVip && user->isVip){
+    if(user->isVip){
         group->isVip = true;
+        group->numOfVipUsers++;
     }
     Node<group_node>* groupUser = new Node<group_node>(0,userId, nullptr);
     if(!groupUser){
@@ -352,7 +352,7 @@ StatusType streaming_database::add_user_to_group(int userId, int groupId)
     user->GroupActionViews = group->ActionWatched;
     copyNodeContent(groupUser,user);
     groupUser->groupUser = user;
-    group->views+=user->views;
+    group->views += user->views;
     group->ComedyViews+= user->ComedyViews;
     group->DramaViews+= user->DramaViews;
     group->ActionViews+= user->ActionViews;
@@ -501,6 +501,7 @@ StatusType streaming_database::group_watch(int groupId,int movieId)
     }
     copyNodeContent(curMovie,movie);
     group->moviesWatched++;
+    group->views += group->members.getNumOfNodes();
     switch (movie->genre) {
         case Genre::COMEDY:
             group->ComedyWatched++;

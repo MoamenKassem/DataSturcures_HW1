@@ -1,4 +1,4 @@
-//
+// 
 // 234218 Data Structures 1.
 // Semester: 2023B (spring).
 // Wet Exercise #1.
@@ -8,19 +8,13 @@
 // The following main file is necessary to link and run your code.
 // This file is READ ONLY: even if you submit something else, the compiler ..
 // .. WILL use our file.
-//
-
-
-
+// 
 
 #include "StreamingDBa1.h"
 #include <string>
 #include <iostream>
-#include <fstream>
+
 using namespace std;
-
-
-string OUTPUT_FILE_LOCATION = "C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/CurrentOutput.txt";
 
 void print(string cmd, StatusType res);
 void print(string cmd, output_t<int> res);
@@ -28,20 +22,17 @@ void query_get_all_movies(string cmd, streaming_database *obj, Genre genre);
 
 int main()
 {
-    std::ofstream myfile(OUTPUT_FILE_LOCATION); // Without append
-    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
-    std::ofstream myfile2("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/TreeOutput.txt"); // Without append
-    myfile2.open ("C:/Users/LENOVO/Downloads/Data-Structures-Spring-2023-Wet-1/TreeOutput.txt",ios::app);
+	
     int d1, d2, d3, g1;
     string b1;
     bool b;
 
     // Init
     streaming_database *obj = new streaming_database();
-
+	
     // Execute all commands in file
-    string op;
-    while (cin >> op)
+	string op;
+	while (cin >> op)
     {
         if (!op.compare("add_movie")) {
             cin >> d1 >> g1 >> d2 >> b1;
@@ -52,7 +43,7 @@ int main()
                 b = false;
             }
             else {
-                myfile << "Invalid input format" << endl;
+                cout << "Invalid input format" << endl;
                 return -1;
             }
             print(op, obj->add_movie(d1, (Genre) g1, d2, b));
@@ -68,7 +59,7 @@ int main()
                 b = false;
             }
             else {
-                myfile << "Invalid input format" << endl;
+                cout << "Invalid input format" << endl;
                 return -1;
             }
             print(op, obj->add_user(d1, b));
@@ -106,52 +97,46 @@ int main()
             cin >> d1;
             print(op, obj->get_group_recommendation(d1));
         } else {
-            myfile << "Unknown command: " << op << endl;
-            break;
+            cout << "Unknown command: " << op << endl;
+            return -1;
         }
         // Verify no faults
         if (cin.fail()){
-            myfile << "Invalid input format" << endl;
+            cout << "Invalid input format" << endl;
             return -1;
         }
     }
 
-    // Quit
-    delete obj;
-    return 0;
+    // Quit 
+	delete obj;
+	return 0;
 }
 
 // Helpers
 static const char *StatusTypeStr[] =
-        {
-                "SUCCESS",
-                "ALLOCATION_ERROR",
-                "INVALID_INPUT",
-                "FAILURE"
-        };
-
-void print(string cmd, StatusType res)
 {
-    std::ofstream myfile;
-    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
-    myfile << cmd << ": " << StatusTypeStr[(int) res] << endl;
+   	"SUCCESS",
+	"ALLOCATION_ERROR",
+	"INVALID_INPUT",
+	"FAILURE"
+};
+
+void print(string cmd, StatusType res) 
+{
+	cout << cmd << ": " << StatusTypeStr[(int) res] << endl;
 }
 
 void print(string cmd, output_t<int> res)
 {
-    std::ofstream myfile;
-    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
     if (res.status() == StatusType::SUCCESS) {
-        myfile << cmd << ": " << StatusTypeStr[(int) res.status()] << ", " << res.ans() << endl;
+	    cout << cmd << ": " << StatusTypeStr[(int) res.status()] << ", " << res.ans() << endl;
     } else {
-        myfile << cmd << ": " << StatusTypeStr[(int) res.status()] << endl;
+	    cout << cmd << ": " << StatusTypeStr[(int) res.status()] << endl;
     }
 }
 
 void query_get_all_movies(string cmd, streaming_database *obj, Genre genre)
 {
-    std::ofstream myfile;
-    myfile.open (OUTPUT_FILE_LOCATION,ios::app);
     output_t<int> count = obj->get_all_movies_count(genre);
     int to_alloc = count.ans();
     if (to_alloc == 0)
@@ -170,10 +155,10 @@ void query_get_all_movies(string cmd, streaming_database *obj, Genre genre)
     StatusType status = obj->get_all_movies(genre, out_mem);
     print(cmd, status);
     if (status == StatusType::SUCCESS) {
-        for (int i = 0; i < to_alloc; ++i)
+	    for (int i = 0; i < to_alloc; ++i)
         {
-            myfile << out_mem[i] << endl;
-        }
+		    cout << out_mem[i] << endl;
+	    }
     }
     delete[] out_mem;
 }

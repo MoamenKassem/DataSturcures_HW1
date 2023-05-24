@@ -35,7 +35,6 @@ public:
     int getBalanceFactor() const;
     int updateHeight();
 
-
     Node():content(0),leftSon(nullptr),rightSon(nullptr),
            father(nullptr),height(0),key(0),
            genre(Genre::NONE), isVip(false), views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), ActionViews(0),
@@ -57,10 +56,7 @@ public:
             , GroupActionViews(0), GroupComedyViews(0), GroupDramaViews(0), GroupFantasyViews(0), rating(0), usersRated(0){};
 
 
-    ~Node()
-    {
-
-    };
+    ~Node()=default;
     Node(Node&)=default;
     Node& operator=(const Node& other)= default;
     void changeVip(bool newVip){isVip = newVip;}

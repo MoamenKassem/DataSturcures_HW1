@@ -8,7 +8,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <queue>
 #include "AVL_Tree.h"
 #include "GroupNode.h"
 #include "wet1util.h"
@@ -63,8 +62,6 @@ public:
     StatusType rate_movie(int userId, int movieId, int rating);
 
     output_t<int> get_group_recommendation(int groupId);
-
-    void deleteAll();
 
     // } </DO-NOT-MODIFY>
 };

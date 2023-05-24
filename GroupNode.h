@@ -32,23 +32,24 @@ public:
     int FantasyWatched;
     int DramaWatched;
     double rating;
+    int numOfVipUsers;
     AVL_Tree<Node<group_node>> members;
 
 
     group_node():content(0),leftSon(nullptr),rightSon(nullptr),
                  father(nullptr),height(0),key(0), isVip(false),
                  views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0) , ActionViews(0)
-            ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
+            ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0), numOfVipUsers(0)
     {members = AVL_Tree<Node<group_node>>();}
     group_node(int key1, int content1,group_node* father1):content(content1),
     leftSon(nullptr),rightSon(nullptr),father(father1),height(0),key(key1),
     isVip(false),views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
-            ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
+            ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0), numOfVipUsers(0)
     {members = AVL_Tree<Node<group_node>>();}
     explicit group_node(int key1):content(0),leftSon(nullptr),rightSon(nullptr),
     father(nullptr),height(0),key(key1), isVip(false),
     views(0), ComedyViews(0), FantasyViews(0), DramaViews(0), moviesWatched(0), ActionViews(0)
-            ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0)
+            ,ComedyWatched(0), ActionWatched(0), FantasyWatched(0),DramaWatched(0), rating(0), numOfVipUsers(0)
     {members = AVL_Tree<Node<group_node>>();}
 
     void addLeftSon(group_node* son){

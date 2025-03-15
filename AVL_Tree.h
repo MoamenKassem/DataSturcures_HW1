@@ -2,6 +2,8 @@
 #define DATASTURCURES_HW1_AVL_TREE_H
 #include "wet1util.h"
 
+
+
 template<class T>
 class AVL_Tree {
     int numOfNodes;
